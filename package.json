@@ -1,6 +1,7 @@
 {
-  "name": "my-app",
+  "name": "movie",
   "private": true,
+  "type": "module",
   "scripts": {
     "frontend": "npm run dev --prefix apps/website",
     "backend": "cd apps/server && ./gradlew bootRun --args='--spring.profiles.active=dev'",
@@ -8,13 +9,15 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "concurrently": "^8.0.0",
     "husky": "^9.1.7"
   },
   "lint-staged": {
-  "apps/website/**/*.{js,ts,jsx,tsx}": [
-    "cd apps/website && npx eslint --fix",
-    "cd apps/website && npx prettier --write"
-  ]
-}
+    "apps/website/**/*.{js,ts,jsx,tsx}": [
+      "cd apps/website && npx eslint --fix",
+      "cd apps/website && npx prettier --write"
+    ]
+  }
 }
