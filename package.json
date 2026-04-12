@@ -19,5 +19,11 @@
       "cd apps/website && npx eslint --fix",
       "cd apps/website && npx prettier --write"
     ]
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "lucide-react": "^1.8.0",
+    "react-router-dom": "^7.14.0",
+    "tailwindcss": "^4.2.2"
   }
 }
