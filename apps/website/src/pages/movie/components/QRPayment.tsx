@@ -1,6 +1,10 @@
 import { QrCode, Smartphone, Scan, CheckCircle2, Clock } from "lucide-react";
+import { useMemo } from "react";
 
 export default function QRPayment() {
+  const dots = useMemo(() => {
+    return Array.from({ length: 400 }).map(() => Math.random() > 0.5);
+  }, []);
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
@@ -13,12 +17,11 @@ export default function QRPayment() {
       <div className="flex flex-col items-center">
         <div className="relative p-6 bg-white rounded-4xl shadow-[0_0_50px_rgba(255,0,128,0.2)]">
           <div className="w-64 h-64 bg-white flex items-center justify-center">
-            {/* Mock QR Code using a grid of squares */}
             <div className="grid grid-cols-20 gap-0.5 w-full h-full">
-              {Array.from({ length: 400 }).map((_, i) => (
+              {dots.map((isBlack, i) => (
                 <div
                   key={i}
-                  className={`w-full h-full ${Math.random() > 0.7 ? "bg-black" : "bg-transparent"}`}
+                  className={`w-full h-full ${isBlack ? "bg-black" : "bg-transparent"}`}
                 />
               ))}
             </div>
