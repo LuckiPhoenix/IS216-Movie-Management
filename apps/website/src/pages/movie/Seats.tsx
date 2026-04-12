@@ -43,7 +43,7 @@ export default function Seats() {
           </div>
 
           <button
-            onClick={() => navigate("/select-theater")}
+            onClick={() => navigate("/theater")}
             className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={16} />

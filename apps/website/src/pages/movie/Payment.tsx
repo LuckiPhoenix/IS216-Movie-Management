@@ -19,6 +19,9 @@ const STEPS = [
 export default function Payment() {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState<"card" | "qr">("card");
+  const [isCardValid, setIsCardValid] = useState(false);
+  const isFormValid =
+    paymentMethod === "qr" || (paymentMethod === "card" && isCardValid);
 
   return (
     <div className="pb-20">
@@ -65,14 +68,20 @@ export default function Payment() {
             </div>
 
             <div className="bg-tickify-card/30 border border-white/5 rounded-[3rem] p-8 md:p-12">
-              {paymentMethod === "card" ? <CardPaymentForm /> : <QRPayment />}
+              {paymentMethod === "card" ? (
+                <CardPaymentForm
+                  onValidationChange={(isValid) => setIsCardValid(isValid)}
+                />
+              ) : (
+                <QRPayment />
+              )}
             </div>
           </div>
 
           <div className="lg:col-span-1">
             <OrderSummary
               total={745}
-              isFormValid={paymentMethod === "qr" || true}
+              isFormValid={isFormValid}
               onComplete={() => navigate("/confirmation")}
             />
           </div>

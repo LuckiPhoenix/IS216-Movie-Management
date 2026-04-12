@@ -78,6 +78,7 @@ export default function OrderSummary({
       <div className="mt-8 space-y-4">
         <button
           onClick={onComplete}
+          disabled={!isFormValid}
           className={`w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
             isFormValid
               ? "bg-tickify-pink text-white shadow-[0_0_20px_rgba(255,0,128,0.4)] hover:shadow-[0_0_30px_rgba(255,0,128,0.6)]"
