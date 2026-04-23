@@ -9,6 +9,7 @@ import Payment from "./pages/movie/Payment.tsx";
 import BookingConfirmation from "./pages/movie/BookingConfirmation.tsx";
 import AdminDashboard from "./pages/dashboard/AdminDashboard.tsx";
 import AdminProfile from "./pages/dashboard/AdminProfile.tsx";
+import AdminMovies from "./pages/dashboard/AdminMovies.tsx";
 
 export default function App() {
   return (
@@ -27,7 +28,7 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
         <Route path="/admin/showtimes" element={<AdminDashboard />} /> {/* Placeholder */}
-        <Route path="/admin/movies" element={<AdminDashboard />} /> {/* Placeholder */}
+        <Route path="/admin/movies" element={<AdminMovies />} /> {/* Placeholder */}
         <Route path="/admin/cinemas" element={<AdminDashboard />} /> {/* Placeholder */}
         <Route path="/admin/analytics" element={<AdminDashboard />} /> {/* Placeholder */}
 
