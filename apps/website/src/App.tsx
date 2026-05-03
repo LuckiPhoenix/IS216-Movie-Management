@@ -1,4 +1,3 @@
-import React from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout.tsx";
 import Home from "./pages/home/Home.tsx";
@@ -13,6 +12,7 @@ import AdminProfile from "./pages/admin/AdminProfile.tsx";
 import AdminRooms from "./pages/admin/AdminRooms.tsx";
 import AdminMovies from "./pages/admin/AdminMovies.tsx";
 import AdminFoods from "./pages/admin/AdminFoods.tsx";
+import StaffPOS from "./pages/staff/POS.tsx";
 
 export default function App() {
   return (
@@ -26,6 +26,10 @@ export default function App() {
         <Route path="/snacks" element={<MainLayout><Snacks /></MainLayout>} />
         <Route path="/payment" element={<MainLayout><Payment /></MainLayout>} />
         <Route path="/confirmation" element={<MainLayout><BookingConfirmation /></MainLayout>} />
+
+        {/* Staff Routes */}
+        <Route path="/staff/pos" element={<StaffPOS />} />
+        <Route path="/staff/history" element={<StaffPOS />} /> {/* Placeholder */}
 
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -42,3 +46,14 @@ export default function App() {
     </Router>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
