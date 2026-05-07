@@ -5,7 +5,10 @@ export interface Movie {
   duration_minutes: number;
   release_date: string | null; // ISO Date string
   rating: number;
+  /** Thể loại — chuỗi nhiều giá trị phân tách bằng dấu phẩy */
   genre: string | null;
+  /** Xếp hạng độ tuổi (VD: K, T13, T16, T18) */
+  age_rating: string | null;
   poster_url: string;
   
   created_at: string;
