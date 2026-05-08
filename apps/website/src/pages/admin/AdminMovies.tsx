@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
-import AdminMovieCard from "../../components/AdminMovieCard";
+import AdminMovieCard from "../admin/components/AdminMovieCard";
 import MovieFormPopup from "../../components/Popups/MovieFormPopup";
 import DeleteConfirmPopup from "../../components/Popups/DeleteConfirmPopup";
 import { Plus } from "lucide-react";
