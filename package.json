@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "frontend": "npm run dev --prefix apps/website",
-    "backend": "cd apps/server && ./gradlew bootRun --args='--spring.profiles.active=dev'",
+    "backend": "cd apps/server && ./gradlew bootRun --args='--spring.profiles.active=test-local'",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
     "prepare": "husky"
   },
