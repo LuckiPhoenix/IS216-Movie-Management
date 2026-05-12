@@ -6,6 +6,7 @@ import {
   LogOut,
   User,
   Popcorn,
+  Users,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -36,6 +37,11 @@ export default function AdminSideBar() {
       icon: <Popcorn size={20} />,
       label: "Foods & Drinks",
       path: "/admin/foods",
+    },
+    {
+      icon: <Users size={20} />,
+      label: "Staff",
+      path: "/admin/staff",
     },
   ];
 
