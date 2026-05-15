@@ -1,0 +1,73 @@
+package com.movie.server.controller;
+
+import com.movie.server.dto.request.ShowtimeRequest;
+import com.movie.server.dto.response.ApiResponse;
+import com.movie.server.dto.response.ShowtimeResponse;
+import com.movie.server.service.ShowtimeService;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/showtimes")
+public class ShowtimeController {
+
+    private final ShowtimeService showtimeService;
+
+    public ShowtimeController(ShowtimeService showtimeService) {
+        this.showtimeService = showtimeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ShowtimeResponse>>> findAll(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime to) {
+        List<ShowtimeResponse> showtimes = showtimeService.findAll(from, to);
+        return ResponseEntity.ok(
+                new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtimes fetched", showtimes));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ShowtimeResponse>> findById(@PathVariable Long id) {
+        ShowtimeResponse response = showtimeService.findById(id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtime fetched", response));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ShowtimeResponse>> create(@RequestBody ShowtimeRequest request) {
+        ShowtimeResponse response = showtimeService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(LocalDateTime.now(), HttpStatus.CREATED.value(), "Showtime created", response));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ShowtimeResponse>> update(
+            @PathVariable Long id, @RequestBody ShowtimeRequest request) {
+        ShowtimeResponse response = showtimeService.update(id, request);
+        return ResponseEntity.ok(
+                new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtime updated", response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Long id) {
+        showtimeService.softDelete(id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtime deleted", null));
+    }
+}
