@@ -53,6 +53,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = true;
 
+    // staff specific fields
+    private String shift; // Morning Shift, Evening Shift, Night Shift, Flexible
+
+    @Column(nullable = false)
+    private String status = "Offline"; // Active, Offline
+
     public User() {}
 
     public Long getId() { return id; }
@@ -101,6 +107,12 @@ public class User {
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public String getShift() { return shift; }
+    public void setShift(String shift) { this.shift = shift; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     // End: Add getter/setter for authenication 
 }
