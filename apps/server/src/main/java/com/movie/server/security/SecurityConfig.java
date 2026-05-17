@@ -3,6 +3,7 @@ package com.movie.server.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -37,6 +38,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/seats/**", "/api/seat-tiers/**", "/api/theater-rooms/**").authenticated()
+                        .requestMatchers("/api/staff/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
