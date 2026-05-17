@@ -38,6 +38,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/seats/**", "/api/seat-tiers/**", "/api/theater-rooms/**").authenticated()
                         .requestMatchers("/api/staff/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")

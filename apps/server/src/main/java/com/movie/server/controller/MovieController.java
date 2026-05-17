@@ -4,6 +4,10 @@ import com.movie.server.dto.request.MovieRequest;
 import com.movie.server.dto.response.ApiResponse;
 import com.movie.server.dto.response.MovieResponse;
 import com.movie.server.service.MovieService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/movies")
+@Tag(name = "Movies", description = "Movie catalogue management (ADMIN write, all roles read)")
+@SecurityRequirement(name = "bearerAuth")
 public class MovieController {
     private final MovieService movieService;
 
@@ -32,10 +38,11 @@ public class MovieController {
     }
 
     @GetMapping
+    @Operation(summary = "List movies with optional keyword / genre / rating filters")
     public ResponseEntity<ApiResponse<List<MovieResponse>>> findAll(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) String rating) {
+            @Parameter(description = "Search by title or description") @RequestParam(required = false) String keyword,
+            @Parameter(description = "Filter by genre") @RequestParam(required = false) String genre,
+            @Parameter(description = "Filter by age rating (e.g. PG, R)") @RequestParam(required = false) String rating) {
         return ResponseEntity.ok(new ApiResponse<>(
                 LocalDateTime.now(),
                 HttpStatus.OK.value(),
@@ -51,12 +58,14 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get movie by ID")
     public ResponseEntity<ApiResponse<MovieResponse>> findById(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
                 LocalDateTime.now(), HttpStatus.OK.value(), "Movie fetched", movieService.findById(id)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create a new movie (ADMIN only)")
     public ResponseEntity<ApiResponse<MovieResponse>> create(
             @ModelAttribute MovieRequest request, @RequestPart(name = "poster", required = false) MultipartFile poster) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
@@ -67,6 +76,7 @@ public class MovieController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update a movie (ADMIN only)")
     public ResponseEntity<ApiResponse<MovieResponse>> update(
             @PathVariable Long id,
             @ModelAttribute MovieRequest request,
@@ -76,12 +86,14 @@ public class MovieController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Soft-delete a movie (ADMIN only)")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Long id) {
         movieService.softDelete(id);
         return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Movie deleted", null));
     }
 
     @PostMapping(value = "/poster", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload a poster image and get its URL (ADMIN only)")
     public ResponseEntity<ApiResponse<Map<String, String>>> uploadPoster(@RequestPart("poster") MultipartFile poster) {
         String url = movieService.uploadPoster(poster);
         return ResponseEntity.ok(new ApiResponse<>(

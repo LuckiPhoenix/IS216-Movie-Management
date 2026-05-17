@@ -4,6 +4,10 @@ import com.movie.server.dto.request.SeatRequest;
 import com.movie.server.dto.response.ApiResponse;
 import com.movie.server.dto.response.SeatResponse;
 import com.movie.server.service.SeatService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/seats")
+@Tag(name = "Seats", description = "Seat configuration within theater rooms")
+@SecurityRequirement(name = "bearerAuth")
 public class SeatController {
 
     private final SeatService seatService;
@@ -29,7 +35,9 @@ public class SeatController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SeatResponse>>> findAll(@RequestParam(required = false) Long roomId) {
+    @Operation(summary = "List seats, optionally filtered by roomId")
+    public ResponseEntity<ApiResponse<List<SeatResponse>>> findAll(
+            @Parameter(description = "Filter by theater room ID") @RequestParam(required = false) Long roomId) {
         List<SeatResponse> seats = seatService.findAll(roomId);
         return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Seats fetched", seats));
     }
