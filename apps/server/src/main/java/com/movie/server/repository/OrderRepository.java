@@ -9,4 +9,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByDeletedAtIsNull();
 
     Optional<Order> findByIdAndDeletedAtIsNull(Long id);
+
+    List<Order> findByUser_EmailAndDeletedAtIsNull(String email);
 }

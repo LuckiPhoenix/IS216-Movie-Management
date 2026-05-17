@@ -98,6 +98,11 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    public List<OrderResponse> findMyOrders(String userEmail) {
+        return orderRepository.findByUser_EmailAndDeletedAtIsNull(userEmail)
+                .stream().map(this::toResponse).toList();
+    }
+
     @Transactional
     public PlaceOrderResponse placeOrder(PlaceOrderRequest request, String userEmail) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
