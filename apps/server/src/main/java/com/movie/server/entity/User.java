@@ -42,6 +42,23 @@ public class User {
     @Column(name = "deleted_by")
     private String deletedBy;
 
+    @Column(nullable = false)
+    private String password;
+
+    // OTP reset password
+    private String otpCode;
+    private LocalDateTime otpExpiredAt;
+
+    // trạng thái account
+    @Column(nullable = false)
+    private boolean enabled = true;
+
+    // staff specific fields
+    private String shift; // Morning Shift, Evening Shift, Night Shift, Flexible
+
+    @Column(nullable = false)
+    private String status = "Offline"; // Active, Offline
+
     public User() {}
 
     public Long getId() { return id; }
@@ -76,4 +93,26 @@ public class User {
 
     public String getDeletedBy() { return deletedBy; }
     public void setDeletedBy(String deletedBy) { this.deletedBy = deletedBy; }
+
+
+    // Start: Add getter/setter for authenication 
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getOtpCode() { return otpCode; }
+    public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
+
+    public LocalDateTime getOtpExpiredAt() { return otpExpiredAt; }
+    public void setOtpExpiredAt(LocalDateTime otpExpiredAt) { this.otpExpiredAt = otpExpiredAt; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public String getShift() { return shift; }
+    public void setShift(String shift) { this.shift = shift; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    // End: Add getter/setter for authenication 
 }

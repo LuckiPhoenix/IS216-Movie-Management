@@ -8,21 +8,53 @@ import Snacks from "./pages/movie/Snacks.tsx";
 import Payment from "./pages/movie/Payment.tsx";
 import BookingConfirmation from "./pages/movie/BookingConfirmation.tsx";
 
+import Login from "./pages/auth/Login.tsx";
+import Register from "./pages/auth/Register.tsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.tsx";
+
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import AdminProfile from "./pages/admin/AdminProfile.tsx";
+import AdminRooms from "./pages/admin/AdminRooms.tsx";
+import AdminMovies from "./pages/admin/AdminMovies.tsx";
+import AdminFoods from "./pages/admin/AdminFoods.tsx";
+import AdminShowtimes from "./pages/admin/AdminShowtimes.tsx";
+import AdminStaff from "./pages/admin/AdminStaff.tsx";
+import StaffDashboard from "./pages/staff/StaffDashboard.tsx";
+
 export default function App() {
   return (
     <Router>
-      <MainLayout>
-        <Routes>
-          <Route index element={<Home />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/theater" element={<Theater />} />
-          <Route path="/seats" element={<Seats />} />
-          <Route path="/snacks" element={<Snacks />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/confirmation" element={<BookingConfirmation />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </MainLayout>
+      <Routes>
+        {/* ================= AUTH ROUTES ================= */}
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* ================= USER ROUTES ================= */}
+        <Route path="/home" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/movies" element={<MainLayout><Movies /></MainLayout>} />
+        <Route path="/theater" element={<MainLayout><Theater /></MainLayout>} />
+        <Route path="/seats" element={<MainLayout><Seats /></MainLayout>} />
+        <Route path="/snacks" element={<MainLayout><Snacks /></MainLayout>} />
+        <Route path="/payment" element={<MainLayout><Payment /></MainLayout>} />
+        <Route path="/confirmation" element={<MainLayout><BookingConfirmation /></MainLayout>} />
+
+        {/* ================= STAFF ROUTES ================= */}
+        <Route path="/staff/dashboard" element={<StaffDashboard />} />
+
+        {/* ================= ADMIN ROUTES ================= */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
+        <Route path="/admin/showtimes" element={<AdminShowtimes />} />
+        <Route path="/admin/movies" element={<AdminMovies />} />
+        <Route path="/admin/foods" element={<AdminFoods />} />
+        <Route path="/admin/cinemas" element={<AdminRooms />} />
+        <Route path="/admin/staff" element={<AdminStaff />} />
+        <Route path="/admin/analytics" element={<AdminDashboard />} /> {/* Placeholder */}
+
+        {/* ================= FALLBACK ================= */}
+        <Route path="*" element={<MainLayout><Home /></MainLayout>} />
+      </Routes>
     </Router>
   );
 }
