@@ -38,11 +38,14 @@ public class ShowtimeController {
     @GetMapping
     @Operation(summary = "List showtimes with optional date-range filter")
     public ResponseEntity<ApiResponse<List<ShowtimeResponse>>> findAll(
-            @Parameter(description = "Start of date range (ISO-8601)") @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @Parameter(description = "End of date range (ISO-8601)") @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        List<ShowtimeResponse> showtimes = showtimeService.findAll(from, to);
+            @Parameter(description = "Filter by movie ID") @RequestParam(required = false) Long movieId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime to) {
+        List<ShowtimeResponse> showtimes = showtimeService.findAll(movieId, from, to);
         return ResponseEntity.ok(
                 new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtimes fetched", showtimes));
     }

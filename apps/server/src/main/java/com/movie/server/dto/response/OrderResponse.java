@@ -3,6 +3,7 @@ package com.movie.server.dto.response;
 import com.movie.server.enums.OrderStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class OrderResponse {
     private Long id;
@@ -16,6 +17,7 @@ public class OrderResponse {
     private String updatedBy;
     private LocalDateTime deletedAt;
     private String deletedBy;
+    private List<OrderItemResponse> items;
 
     public OrderResponse(
             Long id,
@@ -28,7 +30,8 @@ public class OrderResponse {
             LocalDateTime updatedAt,
             String updatedBy,
             LocalDateTime deletedAt,
-            String deletedBy) {
+            String deletedBy,
+            List<OrderItemResponse> items) {
         this.id = id;
         this.userId = userId;
         this.bookingId = bookingId;
@@ -40,6 +43,7 @@ public class OrderResponse {
         this.updatedBy = updatedBy;
         this.deletedAt = deletedAt;
         this.deletedBy = deletedBy;
+        this.items = items;
     }
 
     public Long getId() { return id; }
@@ -53,4 +57,5 @@ public class OrderResponse {
     public String getUpdatedBy() { return updatedBy; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public String getDeletedBy() { return deletedBy; }
+    public List<OrderItemResponse> getItems() { return items; }
 }

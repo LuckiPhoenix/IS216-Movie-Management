@@ -15,6 +15,11 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
     List<Showtime> findByDeletedAtIsNullAndStartTimeBetween(LocalDateTime from, LocalDateTime to);
 
+    List<Showtime> findByMovie_IdAndDeletedAtIsNull(Long movieId);
+
+    List<Showtime> findByMovie_IdAndDeletedAtIsNullAndStartTimeBetween(
+            Long movieId, LocalDateTime from, LocalDateTime to);
+
     @Query(
             "SELECT s FROM Showtime s "
                     + "WHERE s.room.id = :roomId "
