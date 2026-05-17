@@ -31,13 +31,14 @@ public class ShowtimeController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ShowtimeResponse>>> findAll(
+            @RequestParam(required = false) Long movieId,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                     LocalDateTime from,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                     LocalDateTime to) {
-        List<ShowtimeResponse> showtimes = showtimeService.findAll(from, to);
+        List<ShowtimeResponse> showtimes = showtimeService.findAll(movieId, from, to);
         return ResponseEntity.ok(
                 new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Showtimes fetched", showtimes));
     }

@@ -32,9 +32,16 @@ public class ShowtimeService {
         this.theaterRoomRepository = theaterRoomRepository;
     }
 
-    public List<ShowtimeResponse> findAll(LocalDateTime from, LocalDateTime to) {
+    public List<ShowtimeResponse> findAll(Long movieId, LocalDateTime from, LocalDateTime to) {
         List<Showtime> showtimes;
-        if (from != null && to != null) {
+        boolean hasMovieId = movieId != null;
+        boolean hasDateRange = from != null && to != null;
+
+        if (hasMovieId && hasDateRange) {
+            showtimes = showtimeRepository.findByMovie_IdAndDeletedAtIsNullAndStartTimeBetween(movieId, from, to);
+        } else if (hasMovieId) {
+            showtimes = showtimeRepository.findByMovie_IdAndDeletedAtIsNull(movieId);
+        } else if (hasDateRange) {
             showtimes = showtimeRepository.findByDeletedAtIsNullAndStartTimeBetween(from, to);
         } else {
             showtimes = showtimeRepository.findByDeletedAtIsNull();
@@ -156,6 +163,7 @@ public class ShowtimeService {
                 showtime.getId(),
                 showtime.getMovie().getId(),
                 showtime.getMovie().getTitle(),
+                showtime.getMovie().getPosterUrl(),
                 showtime.getRoom().getId(),
                 showtime.getRoom().getName(),
                 showtime.getStartTime(),

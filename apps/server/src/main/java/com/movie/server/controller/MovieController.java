@@ -43,6 +43,13 @@ public class MovieController {
                 movieService.findAll(keyword, genre, rating)));
     }
 
+    @GetMapping("/now-showing")
+    public ResponseEntity<ApiResponse<List<MovieResponse>>> findNowShowing() {
+        return ResponseEntity.ok(new ApiResponse<>(
+                LocalDateTime.now(), HttpStatus.OK.value(), "Now showing movies fetched",
+                movieService.findNowShowing()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponse>> findById(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
