@@ -19,7 +19,9 @@ import AdminMovies from "./pages/admin/AdminMovies.tsx";
 import AdminFoods from "./pages/admin/AdminFoods.tsx";
 import AdminShowtimes from "./pages/admin/AdminShowtimes.tsx";
 import AdminStaff from "./pages/admin/AdminStaff.tsx";
+
 import StaffDashboard from "./pages/staff/StaffDashboard.tsx";
+import POS from "./pages/staff/POS.tsx";
 
 export default function App() {
   return (
@@ -41,6 +43,7 @@ export default function App() {
 
         {/* ================= STAFF ROUTES ================= */}
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
+        <Route path="/staff/pos" element={<POS />} />
 
         {/* ================= ADMIN ROUTES ================= */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
