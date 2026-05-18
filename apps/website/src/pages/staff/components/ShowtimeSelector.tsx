@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Search, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import type { Movie } from "../../../types/movie";
-import type { Showtime } from "../../../types/showtime";
+import type { Showtime } from "../../../types/showTime";
 
 interface ShowtimeSelectorProps {
   movies: Movie[];
@@ -150,17 +150,11 @@ const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                       {movieGroupedShowtimes[movie.id]?.map((st) => {
-                        const isPast = new Date(st.startTime) < new Date();
                         return (
                           <button
                             key={st.id}
-                            disabled={isPast}
                             onClick={() => onSelectShowtime(st)}
-                            className={`group/time relative flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 ${
-                              isPast
-                                ? "bg-white/2 border-white/5 opacity-30 cursor-not-allowed"
-                                : "bg-white/5 border-white/10 hover:border-tickify-cyan hover:bg-tickify-cyan/5 hover:shadow-[0_0_20px_rgba(0,255,242,0.15)] active:scale-95"
-                            }`}
+                            className={`group/time relative flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 bg-white/5 border-white/10 hover:border-tickify-cyan hover:bg-tickify-cyan/5 hover:shadow-[0_0_20px_rgba(0,255,242,0.15)] active:scale-95`}
                           >
                             <span className="text-xl font-display font-bold text-white mb-1 group-hover/time:text-tickify-cyan transition-colors">
                               {new Date(st.startTime).toLocaleTimeString([], {
