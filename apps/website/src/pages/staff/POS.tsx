@@ -8,6 +8,7 @@ import ShowtimeSelector from "./components/ShowtimeSelector";
 import POSSeatMap from "./components/POSSeatMap";
 import CheckoutPanel from "./components/CheckoutPanel";
 import PricingPopup from "./components/PircingPopup";
+import PaymentSuccessModal from "./components/PaymentSuccessModal";
 
 import type { Movie } from "../../types/movie";
 import type { Showtime } from "../../types/showTime";
@@ -29,6 +30,10 @@ export default function POS() {
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
 
   const [isPricingOpen, setIsPricingOpen] = useState(false);
+
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+
+  const [bookingCode, setBookingCode] = useState("");
 
   // Clock updater
   useEffect(() => {
@@ -89,6 +94,15 @@ export default function POS() {
   const handleCompletePayment = () => {
     setSelectedSeatIds([]);
     setIsPricingOpen(false);
+  };
+
+  const resetPOS = () => {
+    setSelectedSeatIds([]);
+    setSelectedShowtime(null);
+    setSelectedMovie(null);
+
+    setIsPaymentSuccess(false);
+    setBookingCode("");
   };
 
   return (
@@ -262,10 +276,28 @@ export default function POS() {
         <PricingPopup
           isOpen={isPricingOpen}
           onClose={() => setIsPricingOpen(false)}
-          onConfirm={() => setIsPricingOpen(false)}
+          onConfirm={() => {
+            setIsPricingOpen(false);
+
+            const generatedCode = `TKF-${Math.floor(
+              10000 + Math.random() * 90000,
+            )}`;
+
+            setBookingCode(generatedCode);
+
+            setIsPaymentSuccess(true);
+          }}
           selectedSeats={selectedSeats}
           typeConfigs={MOCK_ROOM_DATA.typeConfigs}
           movieTitle={selectedMovie?.title || ""}
+        />
+
+        <PaymentSuccessModal
+          isOpen={isPaymentSuccess}
+          bookingCode={bookingCode}
+          totalPrice={totalPrice}
+          seatLabels={selectedSeats.map((seat) => seat.label)}
+          onClose={resetPOS}
         />
       </div>
     </StaffLayout>
