@@ -20,6 +20,15 @@ public class SeatTier {
 
     private String description;
 
+    @Column(name = "price", precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @Column(name = "hex_color")
+    private String hexColor;
+
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -51,6 +60,15 @@ public class SeatTier {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public String getHexColor() { return hexColor; }
+    public void setHexColor(String hexColor) { this.hexColor = hexColor; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

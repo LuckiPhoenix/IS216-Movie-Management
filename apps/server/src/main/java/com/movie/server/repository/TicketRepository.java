@@ -13,6 +13,10 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
+    List<Ticket> findByShowtimeIdAndStatus(Long showtimeId, TicketStatus status);
+
+    List<Ticket> findByShowtimeId(Long showtimeId);
+
     @Query("""
             SELECT COUNT(t), COALESCE(SUM(t.price), 0)
             FROM Ticket t
