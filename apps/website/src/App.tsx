@@ -19,6 +19,7 @@ import AdminMovies from "./pages/admin/AdminMovies.tsx";
 import AdminFoods from "./pages/admin/AdminFoods.tsx";
 import AdminShowtimes from "./pages/admin/AdminShowtimes.tsx";
 import AdminStaff from "./pages/admin/AdminStaff.tsx";
+
 import StaffDashboard from "./pages/staff/StaffDashboard.tsx";
 import StaffPOS from "./pages/staff/POS.tsx";
 import FoodPOS from "./pages/staff/FoodPOS.tsx";

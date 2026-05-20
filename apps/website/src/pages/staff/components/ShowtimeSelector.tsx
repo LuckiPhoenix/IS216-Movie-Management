@@ -1,12 +1,19 @@
-import React, { useState, useMemo } from "react";
-import { Search, Filter } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "motion/react";
+import {
+  Film,
+  Clock3,
+  MonitorPlay,
+  CalendarDays,
+} from "lucide-react";
+
 import type { Movie } from "../../../types/movie";
-import type { Showtime } from "../../../types/showtime";
+import type { Showtime } from "../../../types/showTime";
 
 interface ShowtimeSelectorProps {
   movies: Movie[];
   showtimes: Showtime[];
+
   onSelectShowtime: (showtime: Showtime) => void;
 }
 
@@ -15,196 +22,226 @@ const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
   showtimes,
   onSelectShowtime,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterUpcoming, setFilterUpcoming] = useState(false);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
-  // Group showtimes by movie
-  const movieGroupedShowtimes = useMemo(() => {
-    const grouped: Record<number, Showtime[]> = {};
-    showtimes.forEach((st) => {
-      if (!grouped[st.movieId]) grouped[st.movieId] = [];
-      grouped[st.movieId].push(st);
-    });
+  // Auto select first movie
+  useEffect(() => {
+    if (movies.length > 0 && selectedMovieId === null) {
+      setSelectedMovieId(movies[0].id);
+    }
+  }, [movies, selectedMovieId]);
 
-    // Sort showtimes within each group by time
-    Object.keys(grouped).forEach((key) => {
-      grouped[Number(key)].sort(
-        (a, b) =>
-          new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
-      );
-    });
-
-    return grouped;
-  }, [showtimes]);
-
-  const filteredMovies = movies.filter((movie) => {
-    const matchesSearch = movie.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const hasShowtimes = movieGroupedShowtimes[movie.id]?.length > 0;
-
-    if (filterUpcoming) {
-      const now = new Date();
-      const hasUpcoming = movieGroupedShowtimes[movie.id]?.some(
-        (st) => new Date(st.startTime) > now,
-      );
-      return matchesSearch && hasUpcoming;
+  // Filter showtimes by selected movie
+  const filteredShowtimes = useMemo(() => {
+    if (!selectedMovieId) {
+      return [];
     }
 
-    return matchesSearch && hasShowtimes;
-  });
+    return showtimes
+      .filter((showtime) => showtime.movieId === selectedMovieId)
+      .sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() -
+          new Date(b.startTime).getTime(),
+      );
+  }, [showtimes, selectedMovieId]);
+
+  const selectedMovie = useMemo(() => {
+    return movies.find((movie) => movie.id === selectedMovieId) || null;
+  }, [movies, selectedMovieId]);
 
   return (
-    <div className="space-y-8">
-      {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-tickify-card/50 p-6 rounded-[2.5rem] border border-white/5">
-        <div className="relative flex-1 group">
-          <Search
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-tickify-cyan transition-colors"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Search movie title for customer..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-4 text-white focus:outline-none focus:border-tickify-cyan/50 transition-all font-medium"
-          />
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-hidden rounded-[2.5rem] border border-white/[0.06] bg-slate-900/60 backdrop-blur-xl px-6 py-6 shadow-2xl"
+    >
+      {/* Glow */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-tickify-cyan/10 blur-3xl rounded-full pointer-events-none" />
 
+      <div className="relative z-10 space-y-6">
+        {/* Header */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setFilterUpcoming(!filterUpcoming)}
-            className={`flex items-center gap-2 px-6 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border ${
-              filterUpcoming
-                ? "bg-tickify-cyan text-tickify-dark border-tickify-cyan shadow-[0_0_20px_rgba(0,255,242,0.3)]"
-                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-            }`}
-          >
-            <Filter size={16} />
-            Upcoming Only
-          </button>
-        </div>
-      </div>
+          <div className="w-11 h-11 rounded-2xl bg-tickify-cyan/10 border border-tickify-cyan/20 flex items-center justify-center text-tickify-cyan shadow-[0_0_20px_rgba(0,255,242,0.15)]">
+            <CalendarDays size={20} />
+          </div>
 
-      {/* Movies Grid */}
-      <div className="grid grid-cols-1 gap-6">
-        <AnimatePresence mode="popLayout">
-          {filteredMovies.map((movie) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              key={movie.id}
-              className="group bg-tickify-card border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-tickify-cyan/30 transition-all duration-500 shadow-2xl"
-            >
-              <div className="flex flex-col md:flex-row">
-                {/* Poster Area */}
-                <div className="w-full md:w-56 shrink-0 aspect-[2/3] md:aspect-auto relative bg-tickify-dark border-r border-white/5 overflow-hidden">
-                  <img
-                    src={movie.poster_url}
-                    alt={movie.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-tickify-dark via-transparent to-transparent opacity-60" />
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-gray-500 font-black">
+              Quick Showtime Selector
+            </p>
+
+            <h2 className="text-2xl font-display font-bold text-white">
+              Today Showtimes
+            </h2>
+          </div>
+        </div>
+
+        {/* Movies */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Film size={14} className="text-tickify-cyan" />
+
+            <p className="text-xs uppercase tracking-[0.25em] text-gray-500 font-black">
+              Movies
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {movies.map((movie) => {
+              const isActive = selectedMovieId === movie.id;
+
+              return (
+                <button
+                  key={movie.id}
+                  onClick={() => setSelectedMovieId(movie.id)}
+                  className={`group relative overflow-hidden rounded-2xl border px-5 py-3 transition-all duration-300 ${
+                    isActive
+                      ? "bg-tickify-cyan text-tickify-dark border-tickify-cyan shadow-[0_0_25px_rgba(0,255,242,0.25)]"
+                      : "bg-white/[0.03] border-white/[0.06] text-gray-400 hover:bg-white/[0.05] hover:border-white/10"
+                  }`}
+                >
+                  {/* Active Glow */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-linear-to-r from-white/10 to-transparent pointer-events-none" />
+                  )}
+
+                  <div className="relative z-10 flex items-center gap-3">
+                    {movie.poster_url && (
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-10 h-14 rounded-lg object-cover shadow-lg"
+                      />
+                    )}
+
+                    <div className="text-left">
+                      <p className="font-bold text-sm leading-tight">
+                        {movie.title}
+                      </p>
+
+                      <p
+                        className={`text-[10px] uppercase tracking-widest mt-1 ${
+                          isActive
+                            ? "text-tickify-dark/70"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {movie.genre || "Now Showing"}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Showtime Pills */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Clock3 size={14} className="text-tickify-cyan" />
+
+            <p className="text-xs uppercase tracking-[0.25em] text-gray-500 font-black">
+              Available Showtimes
+            </p>
+          </div>
+
+          {filteredShowtimes.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] py-10 text-center">
+              <p className="text-sm text-gray-500 font-medium">
+                No showtimes available.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {filteredShowtimes.map((showtime) => (
+                <button
+                  key={showtime.id}
+                  onClick={() => onSelectShowtime(showtime)}
+                  className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] hover:bg-tickify-cyan hover:text-tickify-dark hover:border-tickify-cyan transition-all duration-300 px-5 py-4 min-w-[140px]"
+                >
+                  {/* Hover Glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-linear-to-r from-white/10 to-transparent pointer-events-none" />
+
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <Clock3 size={14} />
+
+                      <span className="text-lg font-display font-bold">
+                        {new Date(showtime.startTime).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest font-black opacity-70">
+                      <MonitorPlay size={12} />
+
+                      <span>
+                        Room {showtime.roomId}
+                      </span>
+                    </div>
+
+                    <div className="mt-2 text-center">
+                      <span className="inline-flex px-2 py-1 rounded-full bg-black/10 text-[9px] uppercase tracking-widest font-black">
+                        {showtime.format}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Current Selected Movie Info */}
+        {selectedMovie && (
+          <div className="rounded-[2rem] border border-white/[0.06] bg-white/[0.03] p-5 flex flex-col lg:flex-row gap-5">
+            {selectedMovie.poster_url && (
+              <img
+                src={selectedMovie.poster_url}
+                alt={selectedMovie.title}
+                className="w-full lg:w-28 h-40 lg:h-36 rounded-2xl object-cover shadow-xl"
+              />
+            )}
+
+            <div className="flex-1">
+              <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-2">
+                    {selectedMovie.title}
+                  </h3>
+
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <span>{selectedMovie.genre}</span>
+
+                    <span>•</span>
+
+                    <span>{selectedMovie.duration_minutes} mins</span>
+
+                    <span>•</span>
+
+                    <span>{selectedMovie.rating}</span>
+                  </div>
                 </div>
 
-                {/* Info & Showtimes Area */}
-                <div className="flex-1 p-8 flex flex-col justify-between gap-6">
-                  <div>
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-                      <div>
-                        <h3 className="text-3xl font-display font-bold text-white mb-2 leading-tight">
-                          {movie.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border border-white/5">
-                            {movie.genre?.split(",")[0]}
-                          </span>
-                          <div className="w-1 h-1 bg-gray-700 rounded-full" />
-                          <span className="text-[10px] font-black text-tickify-cyan uppercase tracking-[0.2em]">
-                            {movie.duration_minutes} Minutes
-                          </span>
-                          <div className="w-1 h-1 bg-gray-700 rounded-full" />
-                          <div className="flex items-center gap-1.5 text-yellow-400">
-                            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">
-                              {movie.rating} Rating
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                      <div className="h-px flex-1 bg-linear-to-r from-white/10 to-transparent" />
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] whitespace-nowrap">
-                        Today Showtimes
-                      </p>
-                      <div className="h-px flex-1 bg-linear-to-l from-white/10 to-transparent" />
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                      {movieGroupedShowtimes[movie.id]?.map((st) => {
-                        const isPast = new Date(st.startTime) < new Date();
-                        return (
-                          <button
-                            key={st.id}
-                            disabled={isPast}
-                            onClick={() => onSelectShowtime(st)}
-                            className={`group/time relative flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 ${
-                              isPast
-                                ? "bg-white/2 border-white/5 opacity-30 cursor-not-allowed"
-                                : "bg-white/5 border-white/10 hover:border-tickify-cyan hover:bg-tickify-cyan/5 hover:shadow-[0_0_20px_rgba(0,255,242,0.15)] active:scale-95"
-                            }`}
-                          >
-                            <span className="text-xl font-display font-bold text-white mb-1 group-hover/time:text-tickify-cyan transition-colors">
-                              {new Date(st.startTime).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              })}
-                            </span>
-                            <span className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">
-                              {st.format} • {st.language}
-                            </span>
-
-                            {/* Room Label */}
-                            <div className="mt-2 px-2 py-0.5 rounded-md bg-white/5 group-hover/time:bg-tickify-cyan/20 border border-white/5 group-hover/time:border-tickify-cyan/30 transition-all">
-                              <span className="text-[8px] font-black text-gray-500 group-hover/time:text-tickify-cyan uppercase">
-                                R{st.roomId}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                <div className="px-4 py-2 rounded-2xl bg-tickify-cyan/10 border border-tickify-cyan/20 text-tickify-cyan text-xs font-black uppercase tracking-widest">
+                  Active Selection
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
 
-        {filteredMovies.length === 0 && (
-          <div className="py-24 text-center bg-tickify-card rounded-[3rem] border border-dashed border-white/10">
-            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search size={32} className="text-gray-600" />
+              <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
+                {selectedMovie.description ||
+                  "Now showing in cinemas today."}
+              </p>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
-              No movies found
-            </h3>
-            <p className="text-gray-500">
-              Try adjusting your filters or search query.
-            </p>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

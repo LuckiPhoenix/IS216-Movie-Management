@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/payments")
+@Tag(name = "Payments", description = "Payment processing including VNPay integration")
+@SecurityRequirement(name = "bearerAuth")
 public class PaymentController {
     private final PaymentService paymentService;
 
@@ -31,6 +36,7 @@ public class PaymentController {
     }
 
     @GetMapping
+    @Operation(summary = "List payments, optionally filtered by orderId")
     public ResponseEntity<ApiResponse<List<PaymentResponse>>> findAll(
             @RequestParam(required = false) Long orderId, HttpServletRequest servletRequest) {
         return ResponseEntity.ok(
@@ -42,6 +48,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get payment by ID")
     public ResponseEntity<ApiResponse<PaymentResponse>> findById(@PathVariable Long id, HttpServletRequest servletRequest) {
         return ResponseEntity.ok(
                 new ApiResponse<>(
@@ -52,6 +59,7 @@ public class PaymentController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new payment and generate VNPay payment URL")
     public ResponseEntity<ApiResponse<PaymentResponse>> create(
             @RequestBody PaymentRequest request, HttpServletRequest servletRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
@@ -62,6 +70,7 @@ public class PaymentController {
     }
 
     @GetMapping("/vnpay/return")
+    @Operation(summary = "Handle VNPay payment return callback")
     public ResponseEntity<ApiResponse<VnpayReturnResponse>> handleVnpayReturn(@RequestParam Map<String, String> returnParams) {
         VnpayReturnResponse response = paymentService.processVnpayReturnDetailed(returnParams);
         HttpStatus status = HttpStatus.valueOf(paymentService.resolveVnpReturnHttpCode(
@@ -74,6 +83,7 @@ public class PaymentController {
     }
 
     @PostMapping("/{id}/status")
+    @Operation(summary = "Update payment status manually (ADMIN)")
     public ResponseEntity<ApiResponse<PaymentResponse>> updateStatus(
             @PathVariable Long id, @RequestParam PaymentStatus status) {
         return ResponseEntity.ok(
@@ -85,6 +95,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Mark payment as FAILED (soft delete)")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Long id) {
         paymentService.delete(id);
         return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Payment marked as FAILED", null));

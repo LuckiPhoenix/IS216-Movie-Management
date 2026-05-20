@@ -8,6 +8,7 @@ public class ShowtimeResponse {
     private Long id;
     private Long movieId;
     private String movieTitle;
+    private String moviePosterUrl;
     private Long roomId;
     private String roomName;
     private LocalDateTime startTime;
@@ -24,6 +25,7 @@ public class ShowtimeResponse {
             Long id,
             Long movieId,
             String movieTitle,
+            String moviePosterUrl,
             Long roomId,
             String roomName,
             LocalDateTime startTime,
@@ -38,6 +40,7 @@ public class ShowtimeResponse {
         this.id = id;
         this.movieId = movieId;
         this.movieTitle = movieTitle;
+        this.moviePosterUrl = moviePosterUrl;
         this.roomId = roomId;
         this.roomName = roomName;
         this.startTime = startTime;
@@ -61,6 +64,10 @@ public class ShowtimeResponse {
 
     public String getMovieTitle() {
         return movieTitle;
+    }
+
+    public String getMoviePosterUrl() {
+        return moviePosterUrl;
     }
 
     public Long getRoomId() {

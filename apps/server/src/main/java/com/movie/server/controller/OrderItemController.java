@@ -4,6 +4,9 @@ import com.movie.server.dto.request.OrderItemRequest;
 import com.movie.server.dto.response.ApiResponse;
 import com.movie.server.dto.response.OrderItemResponse;
 import com.movie.server.service.OrderItemService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/order-items")
+@Tag(name = "Order Items", description = "Line items within an order (F&B selections)")
+@SecurityRequirement(name = "bearerAuth")
 public class OrderItemController {
     private final OrderItemService orderItemService;
 
@@ -28,18 +33,21 @@ public class OrderItemController {
     }
 
     @GetMapping
+    @Operation(summary = "List order items, optionally filtered by orderId")
     public ResponseEntity<ApiResponse<List<OrderItemResponse>>> findAll(@RequestParam(required = false) Long orderId) {
         return ResponseEntity.ok(new ApiResponse<>(
                 LocalDateTime.now(), HttpStatus.OK.value(), "Order items fetched", orderItemService.findAll(orderId)));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get order item by ID")
     public ResponseEntity<ApiResponse<OrderItemResponse>> findById(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
                 LocalDateTime.now(), HttpStatus.OK.value(), "Order item fetched", orderItemService.findById(id)));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new order item")
     public ResponseEntity<ApiResponse<OrderItemResponse>> create(@RequestBody OrderItemRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(
@@ -47,6 +55,7 @@ public class OrderItemController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an order item")
     public ResponseEntity<ApiResponse<OrderItemResponse>> update(
             @PathVariable Long id, @RequestBody OrderItemRequest request) {
         return ResponseEntity.ok(new ApiResponse<>(
@@ -54,6 +63,7 @@ public class OrderItemController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an order item")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Long id) {
         orderItemService.delete(id);
         return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Order item deleted", null));

@@ -12,6 +12,7 @@ public class MovieResponse {
     private String rating;
     private String genre;
     private String posterUrl;
+    private String trailerUrl;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
@@ -28,6 +29,7 @@ public class MovieResponse {
             String rating,
             String genre,
             String posterUrl,
+            String trailerUrl,
             LocalDateTime createdAt,
             String createdBy,
             LocalDateTime updatedAt,
@@ -42,6 +44,7 @@ public class MovieResponse {
         this.rating = rating;
         this.genre = genre;
         this.posterUrl = posterUrl;
+        this.trailerUrl = trailerUrl;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.updatedAt = updatedAt;
@@ -80,6 +83,10 @@ public class MovieResponse {
 
     public String getPosterUrl() {
         return posterUrl;
+    }
+
+    public String getTrailerUrl() {
+        return trailerUrl;
     }
 
     public LocalDateTime getCreatedAt() {
