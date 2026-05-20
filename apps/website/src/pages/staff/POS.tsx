@@ -1,6 +1,6 @@
 import { useState } from "react";
 import StaffLayout from "../../layouts/StaffLayout";
-import ShowtimeSelector from "./components/ShowTimeSelector";
+import ShowtimeSelector from "./components/ShowtimeSelector";
 import POSSeatMap from "./components/POSSeatMap";
 import PricingPopup from "./components/PircingPopup";
 import CheckoutPanel from "./components/CheckoutPanel";
@@ -64,6 +64,7 @@ const MOCK_MOVIES: Movie[] = [
     duration_minutes: 115,
     rating: 8.5,
     genre: "Action, Sci-Fi",
+    age_rating: "T13",
     poster_url: "https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&q=80&w=500",
     release_date: "2024-03-27",
     created_at: new Date().toISOString(),
@@ -80,6 +81,7 @@ const MOCK_MOVIES: Movie[] = [
     duration_minutes: 166,
     rating: 9.0,
     genre: "Action, Adventure, Sci-Fi",
+    age_rating: "T13",
     poster_url: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&q=80&w=500",
     release_date: "2024-03-01",
     created_at: new Date().toISOString(),
@@ -96,6 +98,7 @@ const MOCK_MOVIES: Movie[] = [
     duration_minutes: 94,
     rating: 7.8,
     genre: "Animation, Comedy, Family",
+    age_rating: "K",
     poster_url: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&q=80&w=500",
     release_date: "2024-03-08",
     created_at: new Date().toISOString(),
