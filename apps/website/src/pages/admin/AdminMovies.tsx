@@ -14,6 +14,7 @@ const MOCK_MOVIES: Movie[] = [
     duration_minutes: 112,
     rating: 8.1,
     genre: "Horror, Thriller, Supernatural",
+    age_rating: "T18",
     poster_url: "https://picsum.photos/seed/horror/400/600",
     release_date: "2024-10-15",
     created_at: new Date().toISOString(),

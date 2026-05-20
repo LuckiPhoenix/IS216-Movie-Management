@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import {
   Plus,
@@ -78,7 +78,6 @@ export default function AdminShowtimes() {
   const [showtimes, setShowtimes]       = useState<Showtime[]>(INITIAL_SHOWTIMES);
   const [showModal, setShowModal]       = useState(false);
   const [cinemaDropOpen, setCinemaDropOpen] = useState(false);
-  const [deleteId, setDeleteId]         = useState<number | null>(null);
 
   // Modal form state
   const [selMovie, setSelMovie]   = useState("");
