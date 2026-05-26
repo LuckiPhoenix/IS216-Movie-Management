@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Ticket, CreditCard, ChevronRight, Info } from "lucide-react";
-import type { Seat, SeatTypeConfig } from "../../../types/cinema";
+import type { Seat, SeatTypeConfig } from "../../admin/types/adminRoom";
 
 interface PricingPopupProps {
   isOpen: boolean;

@@ -9,8 +9,8 @@ import {
   Wallet,
 } from "lucide-react";
 
-import type { Seat, SeatTypeConfig } from "../../../types/cinema";
-import type { Showtime } from "../../../types/showTime";
+import type { Seat, SeatTypeConfig } from "../../admin/types/adminRoom";
+import type { Showtime } from "../../../types/showtime";
 import type { Movie } from "../../../types/movie";
 
 interface CheckoutPanelProps {
@@ -137,11 +137,11 @@ const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
 
               <span>•</span>
 
-              <span>{selectedShowtime.format}</span>
+              <span>${selectedShowtime.basePrice}/seat</span>
 
               <span>•</span>
 
-              <span>Room {selectedShowtime.roomId}</span>
+              <span>{selectedShowtime.roomName ?? `Room ${selectedShowtime.roomId}`}</span>
             </div>
           </div>
         )}

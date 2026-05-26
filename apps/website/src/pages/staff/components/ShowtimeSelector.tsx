@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import type { Movie } from "../../../types/movie";
-import type { Showtime } from "../../../types/showTime";
+import type { Showtime } from "../../../types/showtime";
 
 interface ShowtimeSelectorProps {
   movies: Movie[];
@@ -181,13 +181,13 @@ const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
                       <MonitorPlay size={12} />
 
                       <span>
-                        Room {showtime.roomId}
+                        {showtime.roomName ?? `Room ${showtime.roomId}`}
                       </span>
                     </div>
 
                     <div className="mt-2 text-center">
                       <span className="inline-flex px-2 py-1 rounded-full bg-black/10 text-[9px] uppercase tracking-widest font-black">
-                        {showtime.format}
+                        ${showtime.basePrice}
                       </span>
                     </div>
                   </div>

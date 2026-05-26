@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StaffLayout from "../../layouts/StaffLayout";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -17,132 +17,47 @@ import {
   QrCode
 } from "lucide-react";
 
-interface FoodItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: "Combos" | "Popcorn" | "Drinks" | "Snacks";
-  isPopular?: boolean;
-}
+import { foodService } from "../../services/food.service";
+import { orderService } from "../../services/order.service";
+import type { FoodItem } from "../../types/food";
 
-const FOOD_ITEMS: FoodItem[] = [
-  {
-    id: "f1",
-    name: "Classic Combo",
-    description: "1 Large Popcorn + 1 Large Drink",
-    price: 7.5,
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=300",
-    category: "Combos",
-    isPopular: true
-  },
-  {
-    id: "f2",
-    name: "Couple Combo",
-    description: "1 Large Popcorn + 2 Medium Drinks",
-    price: 10.0,
-    image: "https://images.unsplash.com/photo-1585647347384-2593bc35786b?auto=format&fit=crop&q=80&w=300",
-    category: "Combos",
-    isPopular: true
-  },
-  {
-    id: "f3",
-    name: "Family Party Combo",
-    description: "2 Large Popcorn + 3 Drinks + 1 Nachos",
-    price: 18.0,
-    image: "https://images.unsplash.com/photo-1595765273558-782a20e29b13?auto=format&fit=crop&q=80&w=300",
-    category: "Combos"
-  },
-  {
-    id: "f4",
-    name: "Large Classic Popcorn",
-    description: "Buttery and salty classic popcorn",
-    price: 5.0,
-    image: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?auto=format&fit=crop&q=80&w=300",
-    category: "Popcorn"
-  },
-  {
-    id: "f5",
-    name: "Large Caramel Popcorn",
-    description: "Sweet caramel coated crispy popcorn",
-    price: 6.0,
-    image: "https://images.unsplash.com/photo-1612240498936-65f5101365d2?auto=format&fit=crop&q=80&w=300",
-    category: "Popcorn",
-    isPopular: true
-  },
-  {
-    id: "f6",
-    name: "Cheese Popcorn Medium",
-    description: "Savory cheddar cheese popcorn",
-    price: 5.5,
-    image: "https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&q=80&w=300",
-    category: "Popcorn"
-  },
-  {
-    id: "f7",
-    name: "Coca-Cola Large",
-    description: "Ice cold Coca-Cola 32oz",
-    price: 3.0,
-    image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=300",
-    category: "Drinks"
-  },
-  {
-    id: "f8",
-    name: "Sprite Large",
-    description: "Ice cold lemon-lime soda 32oz",
-    price: 3.0,
-    image: "https://images.unsplash.com/photo-1625772290748-39093c3997f5?auto=format&fit=crop&q=80&w=300",
-    category: "Drinks"
-  },
-  {
-    id: "f9",
-    name: "Premium Iced Coffee",
-    description: "Freshly brewed cold black coffee with ice",
-    price: 4.0,
-    image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=300",
-    category: "Drinks"
-  },
-  {
-    id: "f10",
-    name: "Hot Dog Classic",
-    description: "Warm bun with sausage and mustard sauce",
-    price: 6.5,
-    image: "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&q=80&w=300",
-    category: "Snacks"
-  },
-  {
-    id: "f11",
-    name: "Nacho Chips & Cheese",
-    description: "Crispy corn tortilla chips with hot melted cheese",
-    price: 7.0,
-    image: "https://images.unsplash.com/photo-1582231374152-f5b600f10f84?auto=format&fit=crop&q=80&w=300",
-    category: "Snacks"
-  }
-];
-
-const CATEGORIES = ["All", "Combos", "Popcorn", "Drinks", "Snacks"] as const;
+const CATEGORIES = ["All", "COMBO", "COUPLE_SET", "POPCORN", "DRINK", "CANDY"] as const;
+const CATEGORY_DISPLAY: Record<string, string> = {
+  All: "All",
+  COMBO: "Combos",
+  COUPLE_SET: "Sets",
+  POPCORN: "Popcorn",
+  DRINK: "Drinks",
+  CANDY: "Candy",
+};
 
 type Category = (typeof CATEGORIES)[number];
 type PaymentMethod = "cash" | "card" | "e-wallet";
 
 export default function FoodPOS() {
+  const [foods, setFoods] = useState<FoodItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category>("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [cart, setCart] = useState<Record<string, number>>({});
+  const [cart, setCart] = useState<Record<number, number>>({});
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAdd = (id: string) => {
+  useEffect(() => {
+    foodService.getAll().then(setFoods).catch(() => {});
+  }, []);
+
+  const handleAdd = (id: number) => {
     setCart((prev) => ({
       ...prev,
       [id]: (prev[id] || 0) + 1,
     }));
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = (id: number) => {
     setCart((prev) => {
       const updated = { ...prev };
       if (updated[id] <= 1) {
@@ -157,29 +72,51 @@ export default function FoodPOS() {
   const clearCart = () => {
     setCart({});
     setCashReceived("");
+    setError(null);
   };
 
   // Filter food items
-  const filteredItems = FOOD_ITEMS.filter((item) => {
+  const filteredItems = foods.filter((item) => {
+    if (!item.isAvailable) return false;
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           item.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const cartItems = Object.entries(cart).map(([id, quantity]) => {
-    const item = FOOD_ITEMS.find((f) => f.id === id)!;
-    return { item, quantity };
-  });
+  const cartItems = Object.entries(cart)
+    .map(([idStr, quantity]) => {
+      const id = Number(idStr);
+      const item = foods.find((f) => f.id === id);
+      if (!item) return null;
+      return { item, quantity };
+    })
+    .filter((x): x is { item: FoodItem; quantity: number } => x !== null);
 
   const subtotal = cartItems.reduce((acc, { item, quantity }) => acc + item.price * quantity, 0);
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + tax;
 
-  const handleCheckout = () => {
-    const randomId = "FB-" + Math.floor(100000 + Math.random() * 900000);
-    setInvoiceId(randomId);
-    setIsSuccess(true);
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await orderService.place({
+        bookingId: null,
+        items: cartItems.map(({ item, quantity }) => ({
+          foodItemId: item.id,
+          quantity,
+        })),
+      });
+      const randomId = "FB-" + Math.floor(100000 + Math.random() * 900000);
+      setInvoiceId(randomId);
+      setIsSuccess(true);
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Order failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleServeNext = () => {
@@ -239,7 +176,7 @@ export default function FoodPOS() {
                 exit={{ opacity: 0, y: -15 }}
                 className="grid grid-cols-1 xl:grid-cols-3 gap-10"
               >
-                {/* Food Grid & Selector (ST-301) */}
+                {/* Food Grid & Selector */}
                 <div className="xl:col-span-2 space-y-6">
                   {/* Category Filter and Search */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -255,7 +192,7 @@ export default function FoodPOS() {
                               : "text-gray-400 hover:text-white hover:bg-white/5"
                           }`}
                         >
-                          {cat}
+                          {CATEGORY_DISPLAY[cat] ?? cat}
                         </button>
                       ))}
                     </div>
@@ -282,15 +219,8 @@ export default function FoodPOS() {
                           key={item.id}
                           className="bg-tickify-card border border-white/5 hover:border-white/10 rounded-3xl p-4 flex gap-4 transition-all duration-300 relative group overflow-hidden"
                         >
-                          {/* Popular Badge */}
-                          {item.isPopular && (
-                            <div className="absolute top-0 right-0 bg-tickify-cyan/15 border-b border-l border-tickify-cyan/20 px-3 py-1 rounded-bl-xl text-[9px] font-bold text-tickify-cyan tracking-widest uppercase">
-                              Popular
-                            </div>
-                          )}
-
                           <img
-                            src={item.image}
+                            src={item.imageUrl}
                             alt={item.name}
                             className="w-24 h-24 rounded-2xl object-cover bg-white/5"
                           />
@@ -351,7 +281,7 @@ export default function FoodPOS() {
                   </div>
                 </div>
 
-                {/* F&B Invoice Panel (ST-302) */}
+                {/* F&B Invoice Panel */}
                 <div className="space-y-6">
                   <div className="bg-tickify-card border border-white/10 rounded-[2.5rem] p-8 sticky top-12 shadow-2xl overflow-hidden relative flex flex-col justify-between min-h-[70vh]">
                     {/* Background Glow */}
@@ -389,6 +319,11 @@ export default function FoodPOS() {
                           </div>
                         )}
                       </div>
+
+                      {/* Error */}
+                      {error && (
+                        <p className="text-red-400 text-xs mb-4">{error}</p>
+                      )}
 
                       {/* Payment Methods */}
                       {cartItems.length > 0 && (
@@ -434,7 +369,7 @@ export default function FoodPOS() {
                         </div>
                       )}
 
-                      {/* Cash input helper (Only when cash method selected) */}
+                      {/* Cash input helper */}
                       {paymentMethod === "cash" && cartItems.length > 0 && (
                         <div className="bg-white/5 rounded-2xl p-4 mb-6">
                           <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest block mb-2">
@@ -485,15 +420,15 @@ export default function FoodPOS() {
                       {/* Checkout Buttons */}
                       <div className="grid grid-cols-1 gap-3">
                         <button
-                          disabled={cartItems.length === 0 || (paymentMethod === "cash" && (!cashReceived || changeDue < 0))}
+                          disabled={submitting || cartItems.length === 0 || (paymentMethod === "cash" && (!cashReceived || changeDue < 0))}
                           onClick={handleCheckout}
                           className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
-                            cartItems.length > 0 && (paymentMethod !== "cash" || (cashReceived && changeDue >= 0))
+                            !submitting && cartItems.length > 0 && (paymentMethod !== "cash" || (cashReceived && changeDue >= 0))
                               ? "bg-tickify-cyan text-tickify-dark shadow-[0_0_20px_rgba(0,255,242,0.4)] hover:scale-[1.02] active:scale-95 cursor-pointer"
                               : "bg-white/5 text-gray-600 cursor-not-allowed"
                           }`}
                         >
-                          Checkout & Print <ArrowRight size={18} />
+                          {submitting ? "Processing..." : <>Checkout & Print <ArrowRight size={18} /></>}
                         </button>
                         {cartItems.length > 0 && (
                           <button
@@ -509,7 +444,7 @@ export default function FoodPOS() {
                 </div>
               </motion.div>
             ) : (
-              /* Success Panel & Invoice Printing (ST-302) */
+              /* Success Panel & Invoice Printing */
               <motion.div
                 key="pos-invoice"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -558,7 +493,7 @@ export default function FoodPOS() {
                     {/* Receipt Header */}
                     <div className="text-center space-y-1 pb-4 border-b border-dashed border-gray-400">
                       <h3 className="text-lg font-bold uppercase tracking-wider">TICKIFY CINEMA</h3>
-                      <p className="text-[10px] text-gray-500 font-sans">Snack Counter 02 • staff_mock</p>
+                      <p className="text-[10px] text-gray-500 font-sans">Snack Counter 02 • staff_pos</p>
                       <p className="text-[10px] text-gray-500 font-sans">{new Date().toLocaleString()}</p>
                     </div>
 
@@ -613,7 +548,7 @@ export default function FoodPOS() {
                       <div className="pt-2 border-t border-gray-100 space-y-1">
                         <div className="flex justify-between">
                           <span>Cash Paid:</span>
-                          <span>${parseFloat(cashReceived).toFixed(2)}</span>
+                          <span>${parseFloat(cashReceived || "0").toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between font-bold">
                           <span>Change:</span>

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
-import type { Seat, SeatTypeConfig } from "../../../types/cinema";
+import type { Seat, SeatTypeConfig } from "../../admin/types/adminRoom";
 
 interface POSSeatMapProps {
   rowCount: number;

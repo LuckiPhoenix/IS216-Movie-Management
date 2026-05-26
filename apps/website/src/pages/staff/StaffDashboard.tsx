@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { ShoppingCart, History, Film, Ticket, Users, Clock, CupSoda } from "lucide-react";
 import StaffLayout from "../../layouts/StaffLayout";
+import { dashboardService } from "../../services/dashboard.service";
+import type { DashboardStats } from "../../types/dashboard";
 
 const NAV_ITEMS = [
   { 
@@ -27,15 +30,18 @@ const NAV_ITEMS = [
   },
 ];
 
-const STATS = [
-  { icon: Ticket, label: "Vé bán hôm nay", value: "128", color: "from-tickify-pink to-tickify-purple" },
-  { icon: Users, label: "Khách hàng phục vụ", value: "94", color: "from-tickify-cyan to-blue-600" },
-  { icon: Film, label: "Phim đang chiếu", value: "12", color: "from-amber-500 to-orange-600" },
+const STATIC_STATS = [
+  { icon: Film, label: "Phim đang chiếu", value: "—", color: "from-amber-500 to-orange-600" },
   { icon: Clock, label: "Ca làm việc", value: "08:00–17:00", color: "from-green-500 to-teal-600" },
 ];
 
 export default function StaffDashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+
+  useEffect(() => {
+    dashboardService.get().then(setStats).catch(() => {});
+  }, []);
 
   return (
     <StaffLayout>
@@ -55,19 +61,50 @@ export default function StaffDashboard() {
               Chào buổi sáng, Nhân viên! 👋
             </h1>
             <p className="text-gray-400 font-medium text-base">
-              Hôm nay hệ thống ghi nhận có <span className="text-tickify-cyan font-bold">128 vé</span> cần xử lý. Hãy bắt đầu phục vụ khách hàng tại quầy.
+              Hôm nay hệ thống ghi nhận có <span className="text-tickify-cyan font-bold">{stats?.totalTicketsSold ?? "—"} vé</span> cần xử lý. Hãy bắt đầu phục vụ khách hàng tại quầy.
             </p>
           </div>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {STATS.map(({ icon: Icon, label, value, color }, i) => (
+          {/* Live: tickets sold */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0 }}
+            className="bg-tickify-card border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tickify-pink to-tickify-purple flex items-center justify-center mb-4 shadow-lg">
+              <Ticket size={18} className="text-white" />
+            </div>
+            <p className="text-2xl font-display font-bold text-white">{stats?.totalTicketsSold ?? "—"}</p>
+            <p className="text-xs text-gray-500 mt-1 font-semibold">Vé bán hôm nay</p>
+          </motion.div>
+
+          {/* Live: total revenue */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-tickify-card border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tickify-cyan to-blue-600 flex items-center justify-center mb-4 shadow-lg">
+              <Users size={18} className="text-white" />
+            </div>
+            <p className="text-2xl font-display font-bold text-white">
+              {stats ? `$${stats.totalRevenue.toLocaleString()}` : "—"}
+            </p>
+            <p className="text-xs text-gray-500 mt-1 font-semibold">Doanh thu hôm nay</p>
+          </motion.div>
+
+          {/* Static stats */}
+          {STATIC_STATS.map(({ icon: Icon, label, value, color }, i) => (
             <motion.div
               key={label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: (i + 2) * 0.1 }}
               className="bg-tickify-card border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-colors"
             >
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 shadow-lg`}>
