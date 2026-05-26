@@ -45,13 +45,13 @@ export default function Snacks() {
       navigate("/seats");
       return;
     }
+    let mounted = true;
     foodService
       .getAll()
-      .then(setFoods)
-      .catch((err) =>
-        setError(typeof err === "string" ? err : "Failed to load food"),
-      )
-      .finally(() => setLoading(false));
+      .then(data => { if (mounted) setFoods(data); })
+      .catch(err => { if (mounted) setError(typeof err === "string" ? err : "Failed to load food"); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, [bookingId, navigate]);
 
   const handleAdd = (id: string) => {

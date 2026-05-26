@@ -29,7 +29,7 @@ function getSeatColor(tierName: string, isBooked: boolean, isSelected: boolean):
 
 export default function Seats() {
   const navigate = useNavigate();
-  const { showtimeId, setBookingId, setSeats } = useBooking();
+  const { showtimeId, setBookingId, setTotalPrice, setSeats } = useBooking();
 
   const [seatsData, setSeatsData] = useState<SeatAvailability[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
@@ -63,6 +63,7 @@ export default function Seats() {
       const booking = await bookingService.create({ showtimeId, seatIds: selected });
       if (!mounted) return;
       setBookingId(booking.id);
+      setTotalPrice(booking.totalPrice);
       setSeats(selected);
       navigate("/snacks");
     } catch (err) {

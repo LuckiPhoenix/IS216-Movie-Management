@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BookingSteps from "./components/BookingSteps.tsx";
@@ -6,7 +6,6 @@ import PaymentMethodSelector from "./components/PaymentMethod.tsx";
 import CardPaymentForm from "./components/CardPaymentForm.tsx";
 import QRPayment from "./components/QRPayment.tsx";
 import OrderSummary from "./components/OrderSummary.tsx";
-import { bookingService } from "../../services/booking.service";
 import { paymentService } from "../../services/payment.service";
 import { useBooking } from "../../contexts/BookingContext";
 import type { PaymentMethod } from "../../types/payment";
@@ -28,7 +27,11 @@ const UI_METHOD_MAP: Record<"card" | "qr", PaymentMethod> = {
 
 export default function Payment() {
   const navigate = useNavigate();
-  const { bookingId, orderId, setPaymentId } = useBooking();
+  const { bookingId, totalPrice, orderId, setPaymentId } = useBooking();
+
+  useEffect(() => {
+    if (!bookingId) navigate("/seats");
+  }, [bookingId, navigate]);
 
   const [paymentMethod, setPaymentMethod] = useState<"card" | "qr">("card");
   const [isCardValid, setIsCardValid] = useState(false);
@@ -39,18 +42,17 @@ export default function Payment() {
     paymentMethod === "qr" || (paymentMethod === "card" && isCardValid);
 
   const handlePay = async () => {
-    if (!bookingId) {
+    if (!bookingId || totalPrice === null) {
       navigate("/seats");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const booking = await bookingService.getById(bookingId);
       const payment = await paymentService.create({
         bookingId,
         orderId: orderId ?? null,
-        amount: booking.totalPrice,
+        amount: totalPrice,
         method: UI_METHOD_MAP[paymentMethod],
       });
       setPaymentId(payment.id);

@@ -4,6 +4,7 @@ interface BookingState {
   showtimeId: number | null;
   selectedSeatIds: number[];
   bookingId: number | null;
+  totalPrice: number | null;
   orderId: number | null;
   paymentId: number | null;
 }
@@ -12,6 +13,7 @@ interface BookingContextValue extends BookingState {
   setShowtime: (id: number) => void;
   setSeats: (ids: number[]) => void;
   setBookingId: (id: number) => void;
+  setTotalPrice: (amount: number) => void;
   setOrderId: (id: number) => void;
   setPaymentId: (id: number) => void;
   reset: () => void;
@@ -21,6 +23,7 @@ const initial: BookingState = {
   showtimeId: null,
   selectedSeatIds: [],
   bookingId: null,
+  totalPrice: null,
   orderId: null,
   paymentId: null,
 };
@@ -33,12 +36,13 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const setShowtime = (id: number) => setState(s => ({ ...s, showtimeId: id }));
   const setSeats = (ids: number[]) => setState(s => ({ ...s, selectedSeatIds: ids }));
   const setBookingId = (id: number) => setState(s => ({ ...s, bookingId: id }));
+  const setTotalPrice = (amount: number) => setState(s => ({ ...s, totalPrice: amount }));
   const setOrderId = (id: number) => setState(s => ({ ...s, orderId: id }));
   const setPaymentId = (id: number) => setState(s => ({ ...s, paymentId: id }));
   const reset = () => setState(initial);
 
   return (
-    <BookingContext.Provider value={{ ...state, setShowtime, setSeats, setBookingId, setOrderId, setPaymentId, reset }}>
+    <BookingContext.Provider value={{ ...state, setShowtime, setSeats, setBookingId, setTotalPrice, setOrderId, setPaymentId, reset }}>
       {children}
     </BookingContext.Provider>
   );

@@ -47,19 +47,24 @@ export default function BookingConfirmation() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!bookingId) {
       navigate("/home");
       return;
     }
+    let mounted = true;
     const fetches: Promise<unknown>[] = [
-      bookingService.getById(bookingId).then(setBooking),
+      bookingService.getById(bookingId).then(b => { if (mounted) setBooking(b); }),
     ];
     if (orderId) {
-      fetches.push(orderService.getById(orderId).then(setOrder));
+      fetches.push(orderService.getById(orderId).then(o => { if (mounted) setOrder(o); }));
     }
-    Promise.all(fetches).finally(() => setLoading(false));
+    Promise.all(fetches)
+      .catch(err => { if (mounted) setError(typeof err === "string" ? err : "Failed to load booking details"); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, [bookingId, orderId, navigate]);
 
   const handleGoHome = () => {
@@ -74,6 +79,15 @@ export default function BookingConfirmation() {
         <div className="flex items-center justify-center py-32">
           <div className="w-10 h-10 border-2 border-tickify-pink border-t-transparent rounded-full animate-spin" />
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pb-20">
+        <BookingSteps currentStep={6} steps={STEPS} />
+        <div className="flex items-center justify-center py-32 text-red-400 font-medium">{error}</div>
       </div>
     );
   }
