@@ -12,10 +12,12 @@ import PaymentSuccessModal from "./components/PaymentSuccessModal";
 import { movieService } from "../../services/movie.service";
 import { showtimeService } from "../../services/showtime.service";
 import { bookingService } from "../../services/booking.service";
+import { seatService } from "../../services/seat.service";
 
 import type { Movie } from "../../types/movie";
 import type { Showtime } from "../../types/showtime";
 import type { Seat, SeatType, SeatTypeConfig } from "../admin/types/adminRoom";
+import type { SeatAvailability } from "../../types/cinema";
 
 import {
   ChevronRight,
@@ -58,13 +60,6 @@ const generateMockSeats = (rowCount: number, colCount: number): Seat[] => {
   return seats;
 };
 
-const MOCK_ROOM_DATA = {
-  rowCount: 10,
-  colCount: 12,
-  seats: generateMockSeats(10, 12),
-  typeConfigs: DEFAULT_TYPE_CONFIGS,
-};
-
 const BookingStep = {
   SHOWTIME: "showtime",
   SEATS: "seats",
@@ -87,6 +82,7 @@ export default function StaffPOS() {
   // Real data state
   const [movies, setMovies] = useState<Movie[]>([]);
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
+  const [apiSeats, setApiSeats] = useState<SeatAvailability[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
@@ -97,9 +93,17 @@ export default function StaffPOS() {
     movieService.getAll().then(setMovies).catch(() => {});
   }, []);
 
+  // Gap 1: Fetch showtimes reactively when selectedMovie changes
   useEffect(() => {
-    showtimeService.getAll().then(setShowtimes).catch(() => {});
-  }, []);
+    if (!selectedMovie) { setShowtimes([]); return; }
+    showtimeService.getAll(selectedMovie.id).then(setShowtimes).catch(() => {});
+  }, [selectedMovie]);
+
+  // Gap 2: Fetch real seats when selectedShowtime changes
+  useEffect(() => {
+    if (!selectedShowtime) { setApiSeats([]); return; }
+    seatService.getAvailable(selectedShowtime.id).then(setApiSeats).catch(() => {});
+  }, [selectedShowtime]);
 
   // Clock updater
   useEffect(() => {
@@ -127,43 +131,73 @@ export default function StaffPOS() {
     });
   };
 
+  // Gap 3: Map SeatAvailability to admin Seat type for POSSeatMap
+  const roomSeats = useMemo<Seat[]>(() => {
+    if (apiSeats.length === 0) return generateMockSeats(10, 12); // fallback if no showtime selected
+    return apiSeats.map(s => ({
+      id: String(s.id), // string ID for POSSeatMap
+      row: s.rowLabel.charCodeAt(0) - 65, // A=0, B=1, ...
+      col: s.seatNumber - 1,
+      type: s.isBooked
+        ? "Blocked" as const
+        : s.tierName.toLowerCase().includes("vip")
+          ? "VIP" as const
+          : s.tierName.toLowerCase().includes("couple")
+            ? "Couple" as const
+            : "Regular" as const,
+      label: `${s.rowLabel}${s.seatNumber}`,
+    }));
+  }, [apiSeats]);
+
+  // Also compute rowCount/colCount from the fetched seats
+  const roomRowCount = useMemo(() => {
+    if (apiSeats.length === 0) return 10;
+    return Math.max(...apiSeats.map(s => s.rowLabel.charCodeAt(0) - 65)) + 1;
+  }, [apiSeats]);
+
+  const roomColCount = useMemo(() => {
+    if (apiSeats.length === 0) return 12;
+    return Math.max(...apiSeats.map(s => s.seatNumber));
+  }, [apiSeats]);
+
   // Selected seats object list
   const selectedSeats = useMemo(() => {
-    return MOCK_ROOM_DATA.seats.filter((seat) => selectedSeatIds.includes(seat.id));
-  }, [selectedSeatIds]);
+    return roomSeats.filter((seat) => selectedSeatIds.includes(seat.id));
+  }, [selectedSeatIds, roomSeats]);
 
   // Total price
   const totalPrice = useMemo(() => {
     return selectedSeats.reduce((total, seat) => {
-      const config = MOCK_ROOM_DATA.typeConfigs.find((c) => c.type === seat.type);
+      const config = DEFAULT_TYPE_CONFIGS.find((c) => c.type === seat.type);
       return total + (config?.price || 0);
     }, 0);
   }, [selectedSeats]);
 
-  // Simulated booked seats
+  // Booked seats from real API data
   const bookedSeatIds = useMemo(() => {
-    return MOCK_ROOM_DATA.seats
-      .filter((seat) => seat.type === "Blocked")
-      .map((seat) => seat.id);
-  }, []);
+    return roomSeats.filter(s => s.type === "Blocked").map(s => s.id);
+  }, [roomSeats]);
 
+  // Gap 4: Send real numeric seat IDs to bookingService
   const handleConfirmBooking = async () => {
     if (!selectedShowtime || selectedSeatIds.length === 0) return;
     setSubmitting(true);
     setBookingError(null);
     try {
-      // Note: seat IDs from mock map are string labels (e.g. "A1");
-      // bookingService expects numeric IDs — sending 0 as fallback for mock seats
+      // Map string seat IDs ("123") back to numeric IDs for the API
+      const numericSeatIds = selectedSeatIds
+        .map(strId => apiSeats.find(s => String(s.id) === strId)?.id)
+        .filter((id): id is number => id !== undefined);
       await bookingService.create({
         showtimeId: selectedShowtime.id,
-        seatIds: selectedSeatIds.map(() => 0),
+        seatIds: numericSeatIds,
       });
-    } catch {
-      // Non-blocking — still show success UI for the POS flow
-    } finally {
+    } catch (err) {
+      setBookingError(typeof err === "string" ? err : "Booking failed");
       setSubmitting(false);
+      return; // don't show success if booking failed
     }
-
+    setSubmitting(false);
     const generatedCode = `TKF-${Math.floor(10000 + Math.random() * 90000)}`;
     setBookingCode(generatedCode);
     setIsPaymentSuccess(true);
@@ -308,12 +342,12 @@ export default function StaffPOS() {
               {/* Seat Map */}
               <div className="rounded-[2.5rem] border border-white/[0.06] bg-slate-900/60 backdrop-blur-xl p-8 overflow-hidden">
                 <POSSeatMap
-                  rowCount={MOCK_ROOM_DATA.rowCount}
-                  colCount={MOCK_ROOM_DATA.colCount}
-                  seats={MOCK_ROOM_DATA.seats}
+                  rowCount={roomRowCount}
+                  colCount={roomColCount}
+                  seats={roomSeats}
                   selectedSeatIds={selectedSeatIds}
                   bookedSeatIds={bookedSeatIds}
-                  typeConfigs={MOCK_ROOM_DATA.typeConfigs}
+                  typeConfigs={DEFAULT_TYPE_CONFIGS}
                   onToggleSeat={handleToggleSeat}
                 />
               </div>
@@ -324,7 +358,7 @@ export default function StaffPOS() {
                   selectedMovie={selectedMovie}
                   selectedShowtime={selectedShowtime}
                   selectedSeats={selectedSeats}
-                  typeConfigs={MOCK_ROOM_DATA.typeConfigs}
+                  typeConfigs={DEFAULT_TYPE_CONFIGS}
                   totalPrice={totalPrice}
                   onBack={() => setSelectedSeatIds([])}
                   onComplete={() => {
@@ -345,7 +379,7 @@ export default function StaffPOS() {
             handleConfirmBooking();
           }}
           selectedSeats={selectedSeats}
-          typeConfigs={MOCK_ROOM_DATA.typeConfigs}
+          typeConfigs={DEFAULT_TYPE_CONFIGS}
           movieTitle={selectedMovie?.title || ""}
         />
 
