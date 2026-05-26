@@ -1,5 +1,5 @@
 export type PaymentMethod = "CASH" | "VNPAY";
-export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "REFUNDED";
 
 export interface Payment {
   id: number;

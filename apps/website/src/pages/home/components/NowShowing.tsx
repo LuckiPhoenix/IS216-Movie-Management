@@ -88,7 +88,7 @@ export default function NowShowing() {
             </div>
           ))}
         </div>
-      ) : null}
+      )}
     </section>
   );
 }
