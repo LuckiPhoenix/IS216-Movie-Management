@@ -17,35 +17,27 @@ public class PaymentRequest {
 
     public PaymentRequest() {}
 
-    public Long getBookingId() {
-        return bookingId;
-    }
+    public Long getBookingId() { return bookingId; }
+    public void setBookingId(Long bookingId) { this.bookingId = bookingId; }
 
-    public Long getOrderId() {
-        return orderId;
-    }
+    public Long getOrderId() { return orderId; }
+    public void setOrderId(Long orderId) { this.orderId = orderId; }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public PaymentMethod getMethod() {
-        return method;
-    }
+    public PaymentMethod getMethod() { return method; }
+    public void setMethod(PaymentMethod method) { this.method = method; }
 
-    public PaymentStatus getStatus() {
-        return status;
-    }
+    public PaymentStatus getStatus() { return status; }
+    public void setStatus(PaymentStatus status) { this.status = status; }
 
-    public LocalDateTime getPaidAt() {
-        return paidAt;
-    }
+    public LocalDateTime getPaidAt() { return paidAt; }
+    public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
 
-    public String getBankCode() {
-        return bankCode;
-    }
+    public String getBankCode() { return bankCode; }
+    public void setBankCode(String bankCode) { this.bankCode = bankCode; }
 
-    public String getLanguage() {
-        return language;
-    }
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
 }
