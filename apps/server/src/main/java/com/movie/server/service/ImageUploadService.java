@@ -14,14 +14,15 @@ public class ImageUploadService {
 
     private final Cloudinary cloudinary;
 
-    public ImageUploadService(@Value("${CLOUDINARY_URL}") String cloudinaryUrl) {
-        if (cloudinaryUrl == null || cloudinaryUrl.isBlank()) {
-            throw new IllegalStateException("CLOUDINARY_URL is not configured");
-        }
-        this.cloudinary = new Cloudinary(cloudinaryUrl);
+    public ImageUploadService(@Value("${CLOUDINARY_URL:}") String cloudinaryUrl) {
+        this.cloudinary = (cloudinaryUrl != null && !cloudinaryUrl.isBlank())
+                ? new Cloudinary(cloudinaryUrl) : null;
     }
 
     public String uploadImage(MultipartFile image) {
+        if (cloudinary == null) {
+            throw new BadRequestException("Image upload is not configured (CLOUDINARY_URL missing)");
+        }
         validateImage(image);
 
         try {
