@@ -1,4 +1,4 @@
-import { Monitor, MapPin, Star, ChevronRight } from "lucide-react";
+import { Monitor, MapPin, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface BookingSummaryProps {
@@ -10,12 +10,6 @@ interface BookingSummaryProps {
   submitting?: boolean;
 }
 
-const SEAT_PRICES: Record<string, number> = {
-  A: 180, B: 180, C: 180,
-  D: 150, E: 150, F: 150, G: 150,
-  H: 120, I: 120, J: 120
-};
-
 export default function BookingSummary({
   selectedSeats,
   movieTitle,
@@ -24,10 +18,6 @@ export default function BookingSummary({
   onContinue,
   submitting = false,
 }: BookingSummaryProps) {
-  const totalPrice = selectedSeats.reduce((sum, seatId) => {
-    const row = seatId.split("-")[0];
-    return sum + (SEAT_PRICES[row] || 0);
-  }, 0);
 
   return (
     <div className="bg-tickify-card border border-white/5 rounded-[2.5rem] p-8 h-fit sticky top-8 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
@@ -44,10 +34,6 @@ export default function BookingSummary({
           <p>{theater}</p>
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <Star size={16} className="text-yellow-500 fill-yellow-500" />
-          <p>Rating: 4.8/5</p>
-        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -90,7 +76,7 @@ export default function BookingSummary({
 
             <div className="flex items-center justify-between pt-4">
               <span className="text-sm font-bold text-gray-400">Total Price</span>
-              <span className="text-2xl font-display font-bold text-white">${totalPrice}</span>
+              <span className="text-sm font-bold text-gray-500 italic">Calculated at checkout</span>
             </div>
           </motion.div>
         )}

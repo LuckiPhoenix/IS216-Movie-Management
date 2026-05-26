@@ -46,7 +46,7 @@ export default function Seats() {
       .then(setSeatsData)
       .catch(err => setError(typeof err === "string" ? err : "Failed to load seats"))
       .finally(() => setLoading(false));
-  }, [showtimeId]);
+  }, [showtimeId, navigate]);
 
   const toggleSeat = (id: number, isBooked: boolean) => {
     if (isBooked) return;
@@ -57,24 +57,27 @@ export default function Seats() {
 
   const handleConfirm = async () => {
     if (selected.length === 0 || !showtimeId) return;
+    let mounted = true;
     setSubmitting(true);
     try {
       const booking = await bookingService.create({ showtimeId, seatIds: selected });
+      if (!mounted) return;
       setBookingId(booking.id);
       setSeats(selected);
       navigate("/snacks");
     } catch (err) {
-      setError(typeof err === "string" ? err : "Failed to create booking");
+      if (mounted) setError(typeof err === "string" ? err : "Failed to create booking");
     } finally {
-      setSubmitting(false);
+      if (mounted) setSubmitting(false);
     }
+    return () => { mounted = false; };
   };
 
   // Group seats by row for display
   const rowMap = new Map<string, SeatAvailability[]>();
   for (const seat of seatsData) {
     if (!rowMap.has(seat.rowLabel)) rowMap.set(seat.rowLabel, []);
-    rowMap.get(seat.rowLabel)!.push(seat);
+    rowMap.get(seat.rowLabel)?.push(seat);
   }
   const rows = Array.from(rowMap.entries()).sort(([a], [b]) => a.localeCompare(b));
 

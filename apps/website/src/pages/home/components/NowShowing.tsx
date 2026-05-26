@@ -6,11 +6,12 @@ import type { Movie } from "../../../types/movie";
 export default function NowShowing() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     movieService.getNowShowing()
       .then(setMovies)
-      .catch(() => {})
+      .catch(err => setError(typeof err === "string" ? err : "Failed to load movies"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,7 +41,9 @@ export default function NowShowing() {
         </button>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="text-center p-8 text-red-400 font-medium">{error}</div>
+      ) : loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse">
@@ -85,7 +88,7 @@ export default function NowShowing() {
             </div>
           ))}
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

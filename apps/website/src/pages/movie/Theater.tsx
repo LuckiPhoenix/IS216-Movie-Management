@@ -49,7 +49,7 @@ export default function Theater() {
       .then(setShowtimes)
       .catch(err => setError(typeof err === "string" ? err : "Failed to load showtimes"))
       .finally(() => setLoading(false));
-  }, [movieId]);
+  }, [movieId, navigate]);
 
   const handleSelect = (showtimeId: number) => {
     setShowtime(showtimeId);
