@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BookingSteps from "./components/BookingSteps.tsx";
 import SnackCard from "./components/SnackCard.tsx";
 import SnackSummary from "./components/SnackSummary.tsx";
+import { foodService } from "../../services/food.service";
+import { orderService } from "../../services/order.service";
+import { useBooking } from "../../contexts/BookingContext";
+import type { FoodItem } from "../../types/food";
+import { CATEGORY_LABELS } from "../../types/food";
 
 const STEPS = [
   { id: 1, label: "Movies" },
@@ -14,91 +19,40 @@ const STEPS = [
   { id: 6, label: "Confirmation" },
 ];
 
-const CATEGORIES = [
-  "All Items",
-  "Combo Deals",
-  "Couple Sets",
-  "Popcorn",
-  "Drinks",
-  "Candy",
-];
-
-const SNACKS = [
-  {
-    id: "s1",
-    name: "Large Classic Popcorn",
-    description: "Buttery and delicious, perfect for sharing",
-    price: 85,
-    image: "https://picsum.photos/seed/popcorn1/200/200",
-    isPopular: true,
-  },
-  {
-    id: "s2",
-    name: "Medium Caramel Popcorn",
-    description: "Sweet caramel coating on fresh popcorn",
-    price: 75,
-    image: "https://picsum.photos/seed/popcorn2/200/200",
-  },
-  {
-    id: "s3",
-    name: "Large Coca-Cola",
-    description: "Ice-cold classic cola, 32oz",
-    price: 55,
-    image: "https://picsum.photos/seed/coke/200/200",
-    isPopular: true,
-  },
-  {
-    id: "s4",
-    name: "Iced Coffee",
-    description: "Premium cold brew coffee",
-    price: 65,
-    image: "https://picsum.photos/seed/coffee/200/200",
-  },
-  {
-    id: "s5",
-    name: "Movie Theater Nachos",
-    description: "Crispy chips with cheese and jalapeños",
-    price: 95,
-    image: "https://picsum.photos/seed/nachos/200/200",
-  },
-  {
-    id: "s6",
-    name: "Assorted Candy Mix",
-    description: "Selection of popular movie theater candies",
-    price: 45,
-    image: "https://picsum.photos/seed/candy/200/200",
-  },
-  {
-    id: "s7",
-    name: "Movie Night Combo",
-    description: "Popcorn + Coca-Cola + Fries + Fresh grapes",
-    price: 195,
-    image: "https://picsum.photos/seed/combo1/200/200",
-    isPopular: true,
-  },
-  {
-    id: "s8",
-    name: "Fresh Lemonade",
-    description: "Freshly squeezed lemon juice with ice",
-    price: 55,
-    image: "https://picsum.photos/seed/lemonade/200/200",
-  },
-  {
-    id: "s9",
-    name: "Couple Movie Set",
-    description: "2 Popcorn buckets + 3 Drinks + Premium snacks",
-    price: 280,
-    image: "https://picsum.photos/seed/combo2/200/200",
-    isPopular: true,
-  },
-];
+// Adapter: convert FoodItem (numeric id, imageUrl) to the shape SnackCard/SnackSummary expect (string id, image)
+function toSnackShape(food: FoodItem) {
+  return {
+    id: String(food.id),
+    name: food.name,
+    description: food.description,
+    price: food.price,
+    image: food.imageUrl,
+  };
+}
 
 export default function Snacks() {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("All Items");
-  const [selectedSnacks, setSelectedSnacks] = useState<Record<string, number>>(
-    {},
-  );
+  const { bookingId, setOrderId } = useBooking();
+
+  const [foods, setFoods] = useState<FoodItem[]>([]);
+  const [selectedSnacks, setSelectedSnacks] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!bookingId) {
+      navigate("/seats");
+      return;
+    }
+    foodService
+      .getAll()
+      .then(setFoods)
+      .catch((err) =>
+        setError(typeof err === "string" ? err : "Failed to load food"),
+      )
+      .finally(() => setLoading(false));
+  }, [bookingId, navigate]);
 
   const handleAdd = (id: string) => {
     setSelectedSnacks((prev) => ({
@@ -113,6 +67,38 @@ export default function Snacks() {
       [id]: Math.max(0, (prev[id] || 0) - 1),
     }));
   };
+
+  const handleContinue = async () => {
+    if (!bookingId) return;
+    const cartItems = Object.entries(selectedSnacks)
+      .filter(([, qty]) => qty > 0)
+      .map(([idStr, quantity]) => ({ foodItemId: Number(idStr), quantity }));
+
+    if (cartItems.length === 0) {
+      navigate("/payment");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const order = await orderService.place({ bookingId, items: cartItems });
+      setOrderId(order.id);
+      navigate("/payment");
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Failed to place order");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Group foods by category
+  const grouped = foods.reduce<Record<string, FoodItem[]>>((acc, food) => {
+    const key = food.category ?? "OTHER";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(food);
+    return acc;
+  }, {});
+
+  const snackShapes = foods.map(toSnackShape);
 
   return (
     <div className="pb-20">
@@ -137,74 +123,83 @@ export default function Snacks() {
               <ArrowLeft size={16} />
               Back to Seats
             </button>
-            <div className="hidden md:block">
-              <p className="text-[10px] font-bold text-tickify-pink uppercase tracking-widest">
-                Deadpool & Wolverine
-              </p>
-              <p className="text-sm font-bold">10:00 AM • 2 seats</p>
-            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Snacks Menu */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Category Filters */}
-            <div className="bg-tickify-card/50 border border-white/5 rounded-3xl p-4 flex flex-wrap items-center gap-2">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${
-                    selectedCategory === cat
-                      ? "bg-tickify-pink text-white shadow-[0_0_15px_rgba(255,0,128,0.4)]"
-                      : "text-gray-500 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+        {error && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-2xl px-6 py-4 text-sm text-red-400 font-medium">
+            {error}
+          </div>
+        )}
 
-            {/* Skip Queue Banner */}
-            <div className="bg-tickify-cyan/5 border border-tickify-cyan/20 rounded-2xl p-6 flex items-center gap-4">
-              <div className="w-12 h-12 bg-tickify-cyan/10 rounded-xl flex items-center justify-center">
-                <Clock size={24} className="text-tickify-cyan" />
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="w-10 h-10 border-2 border-tickify-pink border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Snacks Menu */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Skip Queue Banner */}
+              <div className="bg-tickify-cyan/5 border border-tickify-cyan/20 rounded-2xl p-6 flex items-center gap-4">
+                <div className="w-12 h-12 bg-tickify-cyan/10 rounded-xl flex items-center justify-center">
+                  <Clock size={24} className="text-tickify-cyan" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-tickify-cyan">
+                    Skip the Queue!
+                  </h4>
+                  <p className="text-xs text-gray-400">
+                    Pre-order your snacks and pick them up at our express
+                    counter. Save time and never miss a moment of your movie!
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-sm font-bold text-tickify-cyan">
-                  Skip the Queue!
-                </h4>
-                <p className="text-xs text-gray-400">
-                  Pre-order your snacks and pick them up at our express counter.
-                  Save time and never miss a moment of your movie!
+
+              {/* Foods grouped by category */}
+              {Object.entries(grouped).map(([category, items]) => (
+                <div key={category}>
+                  <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">
+                    {CATEGORY_LABELS[category] ?? category}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {items.map((food) => (
+                      <SnackCard
+                        key={food.id}
+                        snack={toSnackShape(food)}
+                        quantity={selectedSnacks[String(food.id)] || 0}
+                        onAdd={handleAdd}
+                        onRemove={handleRemove}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {foods.length === 0 && (
+                <p className="text-gray-500 text-sm text-center py-12">
+                  No food items available at this time.
                 </p>
-              </div>
+              )}
             </div>
 
-            {/* Snacks Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {SNACKS.map((snack) => (
-                <SnackCard
-                  key={snack.id}
-                  snack={snack}
-                  quantity={selectedSnacks[snack.id] || 0}
-                  onAdd={handleAdd}
-                  onRemove={handleRemove}
-                />
-              ))}
+            <div className="lg:col-span-1">
+              <SnackSummary
+                selectedSnacks={selectedSnacks}
+                snacks={snackShapes}
+                ticketPrice={0}
+                onContinue={submitting ? () => {} : handleContinue}
+                onSkip={() => navigate("/payment")}
+              />
+              {submitting && (
+                <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+                  <div className="w-4 h-4 border-2 border-tickify-pink border-t-transparent rounded-full animate-spin" />
+                  Placing order…
+                </div>
+              )}
             </div>
           </div>
-          <div className="lg:col-span-1">
-            <SnackSummary
-              selectedSnacks={selectedSnacks}
-              snacks={SNACKS}
-              ticketPrice={300}
-              onContinue={() => navigate("/payment")}
-              onSkip={() => navigate("/payment")}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,10 @@ import PaymentMethodSelector from "./components/PaymentMethod.tsx";
 import CardPaymentForm from "./components/CardPaymentForm.tsx";
 import QRPayment from "./components/QRPayment.tsx";
 import OrderSummary from "./components/OrderSummary.tsx";
+import { bookingService } from "../../services/booking.service";
+import { paymentService } from "../../services/payment.service";
+import { useBooking } from "../../contexts/BookingContext";
+import type { PaymentMethod } from "../../types/payment";
 
 const STEPS = [
   { id: 1, label: "Movies" },
@@ -16,12 +20,47 @@ const STEPS = [
   { id: 6, label: "Confirmation" },
 ];
 
+// Map UI method selection to backend PaymentMethod enum
+const UI_METHOD_MAP: Record<"card" | "qr", PaymentMethod> = {
+  card: "CASH",
+  qr: "VNPAY",
+};
+
 export default function Payment() {
   const navigate = useNavigate();
+  const { bookingId, orderId, setPaymentId } = useBooking();
+
   const [paymentMethod, setPaymentMethod] = useState<"card" | "qr">("card");
   const [isCardValid, setIsCardValid] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const isFormValid =
     paymentMethod === "qr" || (paymentMethod === "card" && isCardValid);
+
+  const handlePay = async () => {
+    if (!bookingId) {
+      navigate("/seats");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const booking = await bookingService.getById(bookingId);
+      const payment = await paymentService.create({
+        bookingId,
+        orderId: orderId ?? null,
+        amount: booking.totalPrice,
+        method: UI_METHOD_MAP[paymentMethod],
+      });
+      setPaymentId(payment.id);
+      navigate("/confirmation");
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Payment failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="pb-20">
@@ -46,16 +85,14 @@ export default function Payment() {
               <ArrowLeft size={16} />
               Back to Snacks
             </button>
-            <div className="hidden md:block">
-              <p className="text-[10px] font-bold text-tickify-pink uppercase tracking-widest">
-                Deadpool & Wolverine
-              </p>
-              <p className="text-sm font-bold">
-                10:00 AM • 2 seats • 3 snack items
-              </p>
-            </div>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-2xl px-6 py-4 text-sm text-red-400 font-medium">
+            {error}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Payment Options */}
@@ -80,10 +117,16 @@ export default function Payment() {
 
           <div className="lg:col-span-1">
             <OrderSummary
-              total={745}
-              isFormValid={isFormValid}
-              onComplete={() => navigate("/confirmation")}
+              total={0}
+              isFormValid={isFormValid && !loading}
+              onComplete={handlePay}
             />
+            {loading && (
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
+                <div className="w-4 h-4 border-2 border-tickify-pink border-t-transparent rounded-full animate-spin" />
+                Processing payment…
+              </div>
+            )}
           </div>
         </div>
       </div>
