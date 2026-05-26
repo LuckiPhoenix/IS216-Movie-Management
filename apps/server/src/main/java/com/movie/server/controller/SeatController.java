@@ -2,6 +2,7 @@ package com.movie.server.controller;
 
 import com.movie.server.dto.request.SeatRequest;
 import com.movie.server.dto.response.ApiResponse;
+import com.movie.server.dto.response.SeatAvailabilityResponse;
 import com.movie.server.dto.response.SeatResponse;
 import com.movie.server.service.SeatService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,15 @@ public class SeatController {
             @Parameter(description = "Filter by theater room ID") @RequestParam(required = false) Long roomId) {
         List<SeatResponse> seats = seatService.findAll(roomId);
         return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(), "Seats fetched", seats));
+    }
+
+    @GetMapping("/available")
+    @Operation(summary = "Get all seats for a showtime's room, annotated with booking status")
+    public ResponseEntity<ApiResponse<List<SeatAvailabilityResponse>>> findAvailable(
+            @Parameter(description = "Showtime ID") @RequestParam Long showtimeId) {
+        List<SeatAvailabilityResponse> response = seatService.findAvailable(showtimeId);
+        return ResponseEntity.ok(new ApiResponse<>(LocalDateTime.now(), HttpStatus.OK.value(),
+                "Available seats fetched", response));
     }
 
     @GetMapping("/{id}")

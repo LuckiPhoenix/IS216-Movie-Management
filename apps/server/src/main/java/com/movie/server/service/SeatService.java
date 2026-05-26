@@ -1,7 +1,9 @@
 package com.movie.server.service;
 
 import com.movie.server.dto.request.SeatRequest;
+import com.movie.server.dto.response.SeatAvailabilityResponse;
 import com.movie.server.dto.response.SeatResponse;
+import com.movie.server.entity.Showtime;
 import com.movie.server.exception.BadRequestException;
 import com.movie.server.exception.ResourceNotFoundException;
 import com.movie.server.entity.Seat;
@@ -9,9 +11,13 @@ import com.movie.server.entity.SeatTier;
 import com.movie.server.entity.TheaterRoom;
 import com.movie.server.repository.SeatRepository;
 import com.movie.server.repository.SeatTierRepository;
+import com.movie.server.repository.ShowtimeRepository;
 import com.movie.server.repository.TheaterRoomRepository;
+import com.movie.server.repository.TicketRepository;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,14 +27,20 @@ public class SeatService {
     private final SeatRepository seatRepository;
     private final TheaterRoomRepository theaterRoomRepository;
     private final SeatTierRepository seatTierRepository;
+    private final ShowtimeRepository showtimeRepository;
+    private final TicketRepository ticketRepository;
 
     public SeatService(
             SeatRepository seatRepository,
             TheaterRoomRepository theaterRoomRepository,
-            SeatTierRepository seatTierRepository) {
+            SeatTierRepository seatTierRepository,
+            ShowtimeRepository showtimeRepository,
+            TicketRepository ticketRepository) {
         this.seatRepository = seatRepository;
         this.theaterRoomRepository = theaterRoomRepository;
         this.seatTierRepository = seatTierRepository;
+        this.showtimeRepository = showtimeRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public List<SeatResponse> findAll(Long roomId) {
@@ -36,6 +48,24 @@ public class SeatService {
             return seatRepository.findByDeletedAtIsNull().stream().map(this::toResponse).toList();
         }
         return seatRepository.findByRoomIdAndDeletedAtIsNull(roomId).stream().map(this::toResponse).toList();
+    }
+
+    public List<SeatAvailabilityResponse> findAvailable(Long showtimeId) {
+        Showtime showtime = showtimeRepository.findByIdAndDeletedAtIsNull(showtimeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Showtime not found: " + showtimeId));
+        Set<Long> booked = new HashSet<>(ticketRepository.findBookedSeatIdsByShowtimeId(showtimeId));
+        return seatRepository.findByRoomIdAndDeletedAtIsNull(showtime.getRoom().getId())
+                .stream()
+                .map(seat -> new SeatAvailabilityResponse(
+                        seat.getId(),
+                        seat.getRoom().getId(),
+                        seat.getRoom().getName(),
+                        seat.getRowLabel(),
+                        seat.getSeatNumber(),
+                        seat.getTier().getId(),
+                        seat.getTier().getName(),
+                        booked.contains(seat.getId())))
+                .toList();
     }
 
     public SeatResponse findById(Long id) {

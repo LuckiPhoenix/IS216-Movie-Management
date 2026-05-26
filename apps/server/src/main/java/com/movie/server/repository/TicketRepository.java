@@ -18,6 +18,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     boolean existsByShowtime_IdAndSeat_IdAndStatusNot(Long showtimeId, Long seatId, TicketStatus status);
 
 
+    @Query("SELECT t.seat.id FROM Ticket t WHERE t.showtime.id = :showtimeId AND t.status <> com.movie.server.enums.TicketStatus.CANCELLED")
+    List<Long> findBookedSeatIdsByShowtimeId(@Param("showtimeId") Long showtimeId);
+
     @Query("""
             SELECT COUNT(t), COALESCE(SUM(t.price), 0)
             FROM Ticket t
