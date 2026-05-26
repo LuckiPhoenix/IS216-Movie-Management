@@ -1,34 +1,19 @@
+import { useEffect, useState } from "react";
 import { Star, Search } from "lucide-react";
-
-interface Movie {
-  title: string;
-  rating: string;
-  image: string;
-  isNew?: boolean;
-}
-
-const MOVIES: Movie[] = [
-  {
-    title: "The Conjuring 4: Last Rites",
-    rating: "8.1",
-    image: "https://picsum.photos/seed/conjuring/400/600",
-    isNew: true
-  },
-  {
-    title: "Deadpool & Wolverine",
-    rating: "8.6",
-    image: "https://picsum.photos/seed/deadpool/400/600",
-    isNew: true
-  },
-  {
-    title: "Wicked",
-    rating: "8.7",
-    image: "https://picsum.photos/seed/wicked/400/600",
-    isNew: true
-  }
-];
+import { movieService } from "../../../services/movie.service";
+import type { Movie } from "../../../types/movie";
 
 export default function NowShowing() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    movieService.getNowShowing()
+      .then(setMovies)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="px-8 py-12">
       {/* Search Bar */}
@@ -55,40 +40,51 @@ export default function NowShowing() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {MOVIES.map((movie, index) => (
-          <div key={index} className="group cursor-pointer">
-            <div className="relative aspect-2/3 rounded-4xl overflow-hidden mb-4 border border-white/5 transition-all duration-500 group-hover:border-tickify-pink/50 group-hover:shadow-[0_0_30px_rgba(255,0,128,0.2)]">
-              <img 
-                src={movie.image} 
-                alt={movie.title} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                referrerPolicy="no-referrer"
-              />
-              
-              {/* Badges */}
-              <div className="absolute top-6 left-6 flex items-center gap-2">
-                {movie.isNew && (
-                  <span className="bg-tickify-pink text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md shadow-lg">New</span>
-                )}
-              </div>
-
-              <div className="absolute top-6 right-6 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
-                <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                <span className="text-xs font-bold">{movie.rating}</span>
-              </div>
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-tickify-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                <button className="w-full bg-white text-black font-bold py-4 rounded-xl transition-transform translate-y-4 group-hover:translate-y-0 duration-500">
-                  Quick Book
-                </button>
-              </div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-2/3 rounded-4xl bg-white/5 mb-4" />
+              <div className="h-4 bg-white/5 rounded w-3/4 mx-auto" />
             </div>
-            <h3 className="text-lg font-display font-bold group-hover:text-tickify-pink transition-colors px-2">{movie.title}</h3>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {movies.map((movie) => (
+            <div key={movie.id} className="group cursor-pointer">
+              <div className="relative aspect-2/3 rounded-4xl overflow-hidden mb-4 border border-white/5 transition-all duration-500 group-hover:border-tickify-pink/50 group-hover:shadow-[0_0_30px_rgba(255,0,128,0.2)]">
+                <img
+                  src={movie.posterUrl}
+                  alt={movie.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  referrerPolicy="no-referrer"
+                />
+
+                {/* Badges */}
+                <div className="absolute top-6 left-6 flex items-center gap-2">
+                  <span className="bg-tickify-pink text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md shadow-lg">New</span>
+                </div>
+
+                {movie.rating && (
+                  <div className="absolute top-6 right-6 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
+                    <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-xs font-bold">{movie.rating}</span>
+                  </div>
+                )}
+
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-linear-to-t from-tickify-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                  <button className="w-full bg-white text-black font-bold py-4 rounded-xl transition-transform translate-y-4 group-hover:translate-y-0 duration-500">
+                    Quick Book
+                  </button>
+                </div>
+              </div>
+              <h3 className="text-lg font-display font-bold group-hover:text-tickify-pink transition-colors px-2">{movie.title}</h3>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

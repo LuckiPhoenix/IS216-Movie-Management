@@ -7,6 +7,7 @@ interface BookingSummaryProps {
   time: string;
   theater: string;
   onContinue: () => void;
+  submitting?: boolean;
 }
 
 const SEAT_PRICES: Record<string, number> = {
@@ -15,12 +16,13 @@ const SEAT_PRICES: Record<string, number> = {
   H: 120, I: 120, J: 120
 };
 
-export default function BookingSummary({ 
-  selectedSeats, 
-  movieTitle, 
-  time, 
+export default function BookingSummary({
+  selectedSeats,
+  movieTitle,
+  time,
   theater,
-  onContinue 
+  onContinue,
+  submitting = false,
 }: BookingSummaryProps) {
   const totalPrice = selectedSeats.reduce((sum, seatId) => {
     const row = seatId.split("-")[0];
@@ -110,17 +112,17 @@ export default function BookingSummary({
           ))}
         </ul>
 
-        <button 
-          disabled={selectedSeats.length === 0}
+        <button
+          disabled={selectedSeats.length === 0 || submitting}
           onClick={onContinue}
           className={`w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
-            selectedSeats.length > 0
+            selectedSeats.length > 0 && !submitting
               ? "bg-tickify-pink text-white shadow-[0_0_20px_rgba(255,0,128,0.4)] hover:shadow-[0_0_30px_rgba(255,0,128,0.6)]"
               : "bg-white/5 text-gray-600 cursor-not-allowed"
           }`}
         >
-          {selectedSeats.length > 0 ? "Continue to Snacks" : "Select Seats"}
-          <ChevronRight size={18} />
+          {submitting ? "Confirming..." : selectedSeats.length > 0 ? "Continue to Snacks" : "Select Seats"}
+          {!submitting && <ChevronRight size={18} />}
         </button>
       </div>
     </div>
