@@ -1,14 +1,11 @@
 export interface Showtime {
   id: number;
   movieId: number;
+  movieTitle: string;
+  moviePosterUrl: string;
   roomId: number;
-
+  roomName: string;
   startTime: string;
-  endTime?: string;
-
-  format: string;
-  language: string;
-
-  price?: number;
-  status?: "SCHEDULED" | "ONGOING" | "COMPLETED";
+  endTime: string;
+  basePrice: number;
 }
