@@ -13,6 +13,11 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
+    List<Ticket> findByBookingId(Long bookingId);
+
+    boolean existsByShowtime_IdAndSeat_IdAndStatusNot(Long showtimeId, Long seatId, TicketStatus status);
+
+
     @Query("""
             SELECT COUNT(t), COALESCE(SUM(t.price), 0)
             FROM Ticket t

@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/**", "/api/food-items/**", "/api/showtimes/**", "/api/theater-rooms/**", "/api/seat-tiers/**").hasRole("ADMIN")
+                        .requestMatchers("/api/bookings/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
