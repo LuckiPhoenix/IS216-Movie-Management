@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Film, Sparkles, Loader2 } from "lucide-react";
-import { mockLogin, saveUserSession } from "../../utils/mockAuth";
+import { authService } from "../../services/auth.service";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,19 +25,14 @@ export default function Login() {
   const onSubmit = async (data: { email: string; password: string }) => {
     setIsLoading(true);
     setError(null);
-
-    // Giả lập độ trễ mạng
-    await new Promise((res) => setTimeout(res, 600));
-
-    const user = mockLogin(data.email, data.password);
-    if (user) {
-      saveUserSession(user);
-      navigate(user.redirectPath);
-    } else {
-      setError("Email hoặc mật khẩu không đúng. Vui lòng thử lại.");
+    try {
+      await authService.login(data.email, data.password);
+      navigate("/home");
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Login failed");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
