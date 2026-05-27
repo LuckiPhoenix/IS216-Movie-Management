@@ -137,7 +137,7 @@ const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
 
               <span>•</span>
 
-              <span>${selectedShowtime.basePrice}/seat</span>
+              <span>₫{selectedShowtime.basePrice.toLocaleString()}/seat</span>
 
               <span>•</span>
 
@@ -211,11 +211,11 @@ const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
 
                       <div className="text-right shrink-0">
                         <p className="text-white font-bold">
-                          ${((config?.price || 0) * seats.length).toFixed(2)}
+                          ₫{((config?.price || 0) * seats.length).toLocaleString()}
                         </p>
 
                         <p className="text-[10px] text-gray-500 mt-1">
-                          ${config?.price} / seat
+                          ₫{(config?.price ?? 0).toLocaleString()} / seat
                         </p>
                       </div>
                     </div>
@@ -235,7 +235,7 @@ const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
               </p>
 
               <p className="text-4xl font-display font-bold text-tickify-dark">
-                ${totalPrice.toFixed(2)}
+                ₫{totalPrice.toLocaleString()}
               </p>
             </div>
 
@@ -300,7 +300,7 @@ const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
                 </p>
 
                 <p className="text-3xl font-display font-bold text-green-400">
-                  ${change.toFixed(2)}
+                  ₫{change.toLocaleString()}
                 </p>
               </div>
 

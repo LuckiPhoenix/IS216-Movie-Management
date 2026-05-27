@@ -220,7 +220,7 @@ export default function BookingConfirmation() {
                         </span>
                       </span>
                       <span className="font-bold">
-                        ฿{item.price * item.quantity}
+                        ₫{item.price * item.quantity}
                       </span>
                     </div>
                   ))}
@@ -237,7 +237,7 @@ export default function BookingConfirmation() {
                 <div className="flex justify-between pt-4 border-t border-white/5">
                   <span className="text-lg font-bold">Total Paid</span>
                   <span className="text-xl font-display font-bold text-tickify-pink">
-                    ฿{booking?.totalPrice ?? 0}
+                    ₫{booking?.totalPrice ?? 0}
                   </span>
                 </div>
               </div>

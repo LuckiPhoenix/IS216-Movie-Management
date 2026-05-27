@@ -42,7 +42,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onEdit, onDelete }) => {
             {item.category}
           </span>
           <span className="text-white font-bold">
-            ฿{item.price.toLocaleString()}
+            ₫{item.price.toLocaleString()}
           </span>
         </div>
 

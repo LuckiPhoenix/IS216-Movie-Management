@@ -29,9 +29,12 @@ function getSeatColor(tierName: string, isBooked: boolean, isSelected: boolean):
 
 export default function Seats() {
   const navigate = useNavigate();
-  const { showtimeId, setBookingId, setTotalPrice, setSeats } = useBooking();
+  const { showtimeId, movieTitle, setBookingId, setTotalPrice, setSeats } = useBooking();
   const mountedRef = useRef(true);
-  useEffect(() => { return () => { mountedRef.current = false; }; }, []);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   const [seatsData, setSeatsData] = useState<SeatAvailability[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
@@ -215,7 +218,7 @@ export default function Seats() {
           <div className="lg:col-span-1">
             <BookingSummary
               selectedSeats={selectedSeatLabels}
-              movieTitle="Your Movie"
+              movieTitle={movieTitle ?? "Your Movie"}
               time=""
               theater=""
               onContinue={handleConfirm}

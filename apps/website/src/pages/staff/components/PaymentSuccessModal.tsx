@@ -129,7 +129,7 @@ const PaymentSuccessModal: React.FC<PaymentSuccessModalProps> = ({
                     </p>
 
                     <p className="text-lg font-bold text-green-400">
-                      ${totalPrice.toFixed(2)}
+                      ₫{totalPrice.toLocaleString()}
                     </p>
                   </div>
                 </div>

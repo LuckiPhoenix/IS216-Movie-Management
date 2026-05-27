@@ -94,7 +94,7 @@ export default function Movies() {
               Student-Friendly Pricing!
             </h4>
             <p className="text-xs text-gray-400">
-              All tickets starting from $120 - Perfect for students and movie
+              All tickets starting from ₫120,000 - Perfect for students and movie
               lovers on a budget!
             </p>
           </div>

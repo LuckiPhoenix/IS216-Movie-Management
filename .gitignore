@@ -4,3 +4,6 @@ node_modules
 .DS_Store
 application.properties
 .env
+
+.playwright-mcp
+*.png

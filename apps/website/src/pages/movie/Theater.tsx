@@ -33,7 +33,7 @@ function formatTime(dateStr: string): string {
 export default function Theater() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setShowtime } = useBooking();
+  const { setShowtime, setMovieTitle } = useBooking();
   const { movieId, movieTitle } = (location.state as { movieId?: number; movieTitle?: string }) ?? {};
 
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
@@ -53,6 +53,7 @@ export default function Theater() {
 
   const handleSelect = (showtimeId: number) => {
     setShowtime(showtimeId);
+    setMovieTitle(movieTitle ?? "");
     navigate("/seats");
   };
 
@@ -124,7 +125,7 @@ export default function Theater() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <DollarSign size={14} className="text-green-400 shrink-0" />
-                    <span className="font-bold text-white">${showtime.basePrice}</span>
+                    <span className="font-bold text-white">₫{showtime.basePrice.toLocaleString()}</span>
                     <span className="text-xs">base price</span>
                   </div>
                 </div>

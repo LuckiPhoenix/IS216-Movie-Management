@@ -126,10 +126,10 @@ const PricingPopup: React.FC<PricingPopupProps> = ({
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-bold text-white">
-                              ${groupTotal}
+                              ₫{Number(groupTotal).toLocaleString()}
                             </p>
                             <p className="text-[10px] text-gray-500">
-                              ${config?.price} / seat
+                              ₫{(config?.price ?? 0).toLocaleString()} / seat
                             </p>
                           </div>
                         </div>
@@ -147,7 +147,7 @@ const PricingPopup: React.FC<PricingPopupProps> = ({
                       Total Amount Due
                     </p>
                     <p className="text-3xl font-display font-bold text-tickify-dark">
-                      ${totalPrice}
+                      ₫{Number(totalPrice).toLocaleString()}
                     </p>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-tickify-dark/10 flex items-center justify-center text-tickify-dark">

@@ -221,8 +221,8 @@ export default function AdminDashboard() {
               value: statsLoading
                 ? "..."
                 : stats
-                  ? `฿${stats.totalRevenue.toLocaleString()}`
-                  : `฿${revenueData.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}`,
+                  ? `₫${stats.totalRevenue.toLocaleString()}`
+                  : `₫${revenueData.reduce((acc, curr) => acc + curr.revenue, 0).toLocaleString()}`,
               trend: "+12.5%",
               isUp: true,
               icon: DollarSign,
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fill: "#6b7280", fontSize: 12, fontWeight: 600 }}
-                    tickFormatter={(value) => `฿${value / 1000}k`}
+                    tickFormatter={(value) => `₫${value / 1000}k`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -491,7 +491,7 @@ export default function AdminDashboard() {
                         {booking.user}
                       </p>
                       <p className="text-xs text-gray-500 font-medium">
-                        {booking.movie} • {booking.seats} seats • ฿
+                        {booking.movie} • {booking.seats} seats • ₫
                         {booking.price}
                       </p>
                     </div>

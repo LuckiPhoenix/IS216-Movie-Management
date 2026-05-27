@@ -238,7 +238,7 @@ export default function FoodPOS() {
 
                             <div className="flex items-center justify-between mt-3">
                               <span className="text-lg font-bold text-white">
-                                ${item.price.toFixed(2)}
+                                ₫{item.price.toLocaleString()}
                               </span>
 
                               {count > 0 ? (
@@ -301,10 +301,10 @@ export default function FoodPOS() {
                             <div key={item.id} className="flex items-center justify-between text-xs font-bold border-b border-white/5 pb-3">
                               <div className="min-w-0 flex-1">
                                 <p className="text-white truncate">{item.name}</p>
-                                <p className="text-gray-500 font-medium mt-0.5">${item.price.toFixed(2)} x {quantity}</p>
+                                <p className="text-gray-500 font-medium mt-0.5">₫{item.price.toLocaleString()} x {quantity}</p>
                               </div>
                               <div className="flex items-center gap-3 ml-4">
-                                <span className="text-white">${(item.price * quantity).toFixed(2)}</span>
+                                <span className="text-white">₫{(item.price * quantity).toLocaleString()}</span>
                                 <button
                                   onClick={() => handleRemove(item.id)}
                                   className="text-gray-500 hover:text-red-400 p-1"
@@ -374,7 +374,7 @@ export default function FoodPOS() {
                       {paymentMethod === "cash" && cartItems.length > 0 && (
                         <div className="bg-white/5 rounded-2xl p-4 mb-6">
                           <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest block mb-2">
-                            Cash Received ($)
+                            Cash Received (₫)
                           </label>
                           <div className="flex gap-2">
                             <input
@@ -394,7 +394,7 @@ export default function FoodPOS() {
                           {cashReceived && changeDue >= 0 && (
                             <div className="flex justify-between items-center mt-3 text-xs font-bold text-green-400">
                               <span>Change Due:</span>
-                              <span>${changeDue.toFixed(2)}</span>
+                              <span>₫{changeDue.toLocaleString()}</span>
                             </div>
                           )}
                         </div>
@@ -406,15 +406,15 @@ export default function FoodPOS() {
                       <div className="space-y-2 border-t border-white/5 pt-4 mb-6">
                         <div className="flex justify-between text-xs font-medium text-gray-500">
                           <span>Subtotal</span>
-                          <span>${subtotal.toFixed(2)}</span>
+                          <span>₫{subtotal.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between text-xs font-medium text-gray-500">
                           <span>VAT (10%)</span>
-                          <span>${tax.toFixed(2)}</span>
+                          <span>₫{tax.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-white/5">
                           <span>Grand Total</span>
-                          <span className="text-tickify-cyan">${total.toFixed(2)}</span>
+                          <span className="text-tickify-cyan">₫{total.toLocaleString()}</span>
                         </div>
                       </div>
 
@@ -521,10 +521,10 @@ export default function FoodPOS() {
                           <div>
                             <p>{item.name}</p>
                             <p className="text-[10px] text-gray-500 font-sans">
-                              ${item.price.toFixed(2)} x {quantity}
+                              ₫{item.price.toLocaleString()} x {quantity}
                             </p>
                           </div>
-                          <span>${(item.price * quantity).toFixed(2)}</span>
+                          <span>₫{(item.price * quantity).toLocaleString()}</span>
                         </div>
                       ))}
                     </div>
@@ -533,15 +533,15 @@ export default function FoodPOS() {
                     <div className="py-4 space-y-1 text-right">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>₫{subtotal.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>VAT (10%):</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>₫{tax.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm font-bold pt-2 border-t border-gray-200">
                         <span>TOTAL:</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>₫{total.toLocaleString()}</span>
                       </div>
                     </div>
 
@@ -549,11 +549,11 @@ export default function FoodPOS() {
                       <div className="pt-2 border-t border-gray-100 space-y-1">
                         <div className="flex justify-between">
                           <span>Cash Paid:</span>
-                          <span>${parseFloat(cashReceived || "0").toFixed(2)}</span>
+                          <span>₫{parseFloat(cashReceived || "0").toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between font-bold">
                           <span>Change:</span>
-                          <span>${changeDue.toFixed(2)}</span>
+                          <span>₫{changeDue.toLocaleString()}</span>
                         </div>
                       </div>
                     )}

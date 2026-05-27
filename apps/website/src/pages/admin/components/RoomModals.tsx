@@ -446,7 +446,7 @@ export default function RoomModals({
                           config.type !== "Blocked" && (
                             <div className="space-y-2">
                               <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">
-                                Premium Price (฿)
+                                Premium Price (₫)
                               </label>
                               <input
                                 type="number"

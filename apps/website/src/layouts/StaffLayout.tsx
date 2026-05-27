@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Film, LogOut, LayoutDashboard, ShoppingCart, CupSoda } from "lucide-react";
-import { clearUserSession, getCurrentRole } from "../utils/mockAuth";
+import { authService } from "../services/auth.service";
 
 interface StaffLayoutProps {
   children: React.ReactNode;
@@ -10,11 +10,11 @@ interface StaffLayoutProps {
 export default function StaffLayout({ children }: StaffLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = getCurrentRole();
+  const role = authService.getCurrentRole();
   const currentPath = location.pathname;
 
   const handleLogout = () => {
-    clearUserSession();
+    authService.logout();
     navigate("/");
   };
 

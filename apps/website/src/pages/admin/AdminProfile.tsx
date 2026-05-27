@@ -5,9 +5,9 @@ import { User, Mail, Shield, Calendar, Edit2, Camera } from "lucide-react";
 export default function AdminProfile() {
   const [isEditing, setIsEditing] = React.useState(false);
   const [adminData, setAdminData] = React.useState({
-    name: "Admin User",
-    email: "admin@tickify.com",
-    role: "Super Admin",
+    name: localStorage.getItem("userFullName") || "Admin User",
+    email: localStorage.getItem("userEmail") || "admin@tickify.com",
+    role: localStorage.getItem("userRole") || "ADMIN",
     joinedDate: "January 15, 2024",
     avatar: null as string | null,
   });

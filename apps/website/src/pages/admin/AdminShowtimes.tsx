@@ -470,7 +470,7 @@ export default function AdminShowtimes() {
                 {/* Ticket Price */}
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">
-                    <DollarSign size={11} className="inline mr-1" />Ticket Price (฿)
+                    <DollarSign size={11} className="inline mr-1" />Ticket Price (₫)
                   </label>
                   <input
                     type="number"

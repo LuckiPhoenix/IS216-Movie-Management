@@ -204,7 +204,7 @@ export default function SeatMapBuilder({
               </span>
               {config.price > 0 && (
                 <span className="text-[10px] text-gray-500 font-bold tracking-tight">
-                  Price: ฿{config.price}
+                  Price: ₫{config.price}
                 </span>
               )}
             </div>

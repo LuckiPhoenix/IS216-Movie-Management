@@ -93,7 +93,7 @@ export default function StaffDashboard() {
               <Users size={18} className="text-white" />
             </div>
             <p className="text-2xl font-display font-bold text-white">
-              {stats ? `$${stats.totalRevenue.toLocaleString()}` : "—"}
+              {stats ? `₫${stats.totalRevenue.toLocaleString()}` : "—"}
             </p>
             <p className="text-xs text-gray-500 mt-1 font-semibold">Doanh thu hôm nay</p>
           </motion.div>

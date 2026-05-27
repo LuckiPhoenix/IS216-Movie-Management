@@ -29,11 +29,11 @@ export default function OrderSummary({
           </h4>
           <div className="flex justify-between text-xs">
             <span className="text-gray-300">D10 (premium)</span>
-            <span className="font-bold text-white">฿150</span>
+            <span className="font-bold text-white">₫150</span>
           </div>
           <div className="flex justify-between text-xs">
             <span className="text-gray-300">D11 (premium)</span>
-            <span className="font-bold text-white">฿150</span>
+            <span className="font-bold text-white">₫150</span>
           </div>
         </div>
 
@@ -43,15 +43,15 @@ export default function OrderSummary({
           </h4>
           <div className="flex justify-between text-xs">
             <span className="text-gray-300">Large Classic Popcorn x1</span>
-            <span className="font-bold text-white">฿85</span>
+            <span className="font-bold text-white">₫85</span>
           </div>
           <div className="flex justify-between text-xs">
             <span className="text-gray-300">Medium Caramel Popcorn x1</span>
-            <span className="font-bold text-white">฿75</span>
+            <span className="font-bold text-white">₫75</span>
           </div>
           <div className="flex justify-between text-xs">
             <span className="text-gray-300">Iced Coffee x4</span>
-            <span className="font-bold text-white">฿260</span>
+            <span className="font-bold text-white">₫260</span>
           </div>
         </div>
       </div>
@@ -59,18 +59,18 @@ export default function OrderSummary({
       <div className="space-y-4 border-t border-white/5 pt-6">
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500 font-bold">Subtotal</span>
-          <span className="text-white font-bold">฿720</span>
+          <span className="text-white font-bold">₫720</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500 font-bold">Service Fee</span>
-          <span className="text-white font-bold">฿25</span>
+          <span className="text-white font-bold">₫25</span>
         </div>
         <div className="flex items-center justify-between pt-4">
           <span className="text-lg font-display font-bold text-white">
             Total
           </span>
           <span className="text-2xl font-display font-bold text-tickify-pink">
-            ฿{total}
+            ₫{total}
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function OrderSummary({
               : "bg-white/5 text-gray-600 cursor-not-allowed"
           }`}
         >
-          {isFormValid ? `Pay ฿${total}` : "Complete Card Details"}
+          {isFormValid ? `Pay ₫${total}` : "Complete Card Details"}
           <ChevronRight size={18} />
         </button>
 

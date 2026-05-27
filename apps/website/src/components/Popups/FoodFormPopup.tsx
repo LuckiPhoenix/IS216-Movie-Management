@@ -123,7 +123,7 @@ const FoodFormPopup: React.FC<FoodFormPopupProps> = ({ isOpen, onClose, onSave, 
 
             {/* Price Stepper */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Price (฿)</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Price (₫)</label>
               <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl p-2">
                 <button 
                   type="button"

@@ -126,18 +126,18 @@ export default function SeatGrid({
         <div className="flex items-center gap-3">
           <div className="w-4 h-4 rounded-full bg-tickify-cyan"></div>
           <span className="text-xs font-bold text-gray-400">
-            Regular ($120)
+            Regular (₫120,000)
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-4 h-4 rounded-full bg-tickify-purple"></div>
           <span className="text-xs font-bold text-gray-400">
-            Premium ($150)
+            Premium (₫150,000)
           </span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-          <span className="text-xs font-bold text-gray-400">VIP ($180)</span>
+          <span className="text-xs font-bold text-gray-400">VIP (₫180,000)</span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-4 h-4 rounded-full bg-white/10"></div>

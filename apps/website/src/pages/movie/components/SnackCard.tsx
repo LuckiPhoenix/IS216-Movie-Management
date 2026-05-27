@@ -46,7 +46,7 @@ export default function SnackCard({ snack, quantity, onAdd, onRemove }: SnackCar
         <div>
           <div className="flex items-start justify-between gap-2 mb-1">
             <h4 className="text-sm font-bold group-hover:text-tickify-pink transition-colors">{snack.name}</h4>
-            <span className="text-sm font-bold text-white">${snack.price}</span>
+            <span className="text-sm font-bold text-white">₫{Number(snack.price).toLocaleString()}</span>
           </div>
           <p className="text-[10px] text-gray-500 font-medium line-clamp-2">{snack.description}</p>
         </div>

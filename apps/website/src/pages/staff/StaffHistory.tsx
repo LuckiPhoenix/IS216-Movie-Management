@@ -74,7 +74,7 @@ export default function StaffHistory() {
               <DollarSign size={20} />
             </div>
             <p className="text-3xl font-display font-bold text-white">
-              {loading ? "—" : `$${totalRevenue.toFixed(2)}`}
+              {loading ? "—" : `₫${totalRevenue.toLocaleString()}`}
             </p>
             <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest font-black">Total Revenue</p>
           </div>
@@ -199,7 +199,7 @@ export default function StaffHistory() {
                       <td className={`px-8 py-5 text-right text-base ${
                         order.status === "CANCELLED" ? "text-gray-500 line-through" : "text-white"
                       }`}>
-                        ${order.totalPrice.toFixed(2)}
+                        ₫{order.totalPrice.toLocaleString()}
                       </td>
                     </tr>
                   ))

@@ -13,29 +13,30 @@ interface MovieFormPopupProps {
 const MovieFormPopup: React.FC<MovieFormPopupProps> = ({ isOpen, onClose, onSave, movieToEdit }) => {
   const isEditMode = !!movieToEdit;
 
-  const [formData, setFormData] = useState<Partial<Movie>>({
-    title: "",
-    description: "",
-    duration_minutes: 120,
-    rating: 8.0,
-    genre: "",
-    poster_url: "",
-    release_date: new Date().toISOString().split('T')[0]
-  });
+  const [formData, setFormData] = useState<Partial<Movie>>({} as Partial<Movie>);
 
   useEffect(() => {
     if (movieToEdit) {
-      setFormData(movieToEdit);
+      setFormData({
+        id: movieToEdit.id,
+        title: movieToEdit.title,
+        description: movieToEdit.description ?? "",
+        duration_minutes: movieToEdit.durationMinutes,
+        rating: movieToEdit.rating ?? "",
+        genre: movieToEdit.genre ?? "",
+        poster_url: movieToEdit.posterUrl,
+        release_date: movieToEdit.releaseDate ?? "",
+      } as Partial<Movie>);
     } else {
       setFormData({
         title: "",
         description: "",
         duration_minutes: 120,
-        rating: 8.0,
+        rating: "",
         genre: "",
         poster_url: "",
         release_date: new Date().toISOString().split('T')[0]
-      });
+      } as Partial<Movie>);
     }
   }, [movieToEdit, isOpen]);
 
@@ -118,7 +119,7 @@ const MovieFormPopup: React.FC<MovieFormPopupProps> = ({ isOpen, onClose, onSave
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
                     <Star size={12} /> Rating
                   </label>
-                  <input type="number" step="0.1" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-tickify-pink outline-none transition-all" value={formData.rating} onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})} />
+                  <input type="text" placeholder="PG-13, R, G..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-tickify-pink outline-none transition-all" value={(formData as {rating?: string}).rating ?? ""} onChange={e => setFormData({...formData, rating: e.target.value} as Partial<Movie>)} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">

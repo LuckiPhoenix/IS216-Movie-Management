@@ -71,7 +71,7 @@ export default function SnackSummary({
                     </span>
                   </span>
                   <span className="font-bold text-white">
-                    ${snack.price * selectedSnacks[snack.id]}
+                    ₫{(snack.price * selectedSnacks[snack.id]).toLocaleString()}
                   </span>
                 </motion.div>
               ))}
@@ -88,18 +88,18 @@ export default function SnackSummary({
       <div className="space-y-4 border-t border-white/5 pt-6">
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500 font-bold">Snacks Total</span>
-          <span className="text-white font-bold">${snacksTotal}</span>
+          <span className="text-white font-bold">₫{Number(snacksTotal).toLocaleString()}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-500 font-bold">Tickets</span>
-          <span className="text-white font-bold">${ticketPrice}</span>
+          <span className="text-white font-bold">₫{Number(ticketPrice).toLocaleString()}</span>
         </div>
         <div className="flex items-center justify-between pt-4">
           <span className="text-lg font-display font-bold text-white">
             Total
           </span>
           <span className="text-2xl font-display font-bold text-tickify-pink">
-            ${total}
+            ₫{Number(total).toLocaleString()}
           </span>
         </div>
       </div>

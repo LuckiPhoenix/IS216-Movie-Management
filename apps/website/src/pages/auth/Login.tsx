@@ -26,8 +26,15 @@ export default function Login() {
     setIsLoading(true);
     setError(null);
     try {
-      await authService.login(data.email, data.password);
-      navigate("/home");
+      const payload = await authService.login(data.email, data.password);
+      const role = (payload?.role as string)?.toUpperCase();
+      if (role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else if (role === "STAFF") {
+        navigate("/staff/dashboard");
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       setError(typeof err === "string" ? err : "Login failed");
     } finally {
