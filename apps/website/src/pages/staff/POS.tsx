@@ -30,9 +30,9 @@ import {
 
 // Mock Data for Seats (kept because POSSeatMap/CheckoutPanel use admin-style seat layout)
 const DEFAULT_TYPE_CONFIGS: SeatTypeConfig[] = [
-  { type: "Regular", color: "#00D2FF", price: 120 },
-  { type: "VIP", color: "#FFB700", price: 180 },
-  { type: "Couple", color: "#7B2CBF", price: 250 },
+  { type: "Regular", color: "#00D2FF", price: 120000 },
+  { type: "VIP", color: "#FFB700", price: 180000 },
+  { type: "Couple", color: "#7B2CBF", price: 250000 },
   { type: "Blocked", color: "#1f2937", price: 0 },
   { type: "Aisle", color: "#000000", price: 0 },
 ];
@@ -83,11 +83,13 @@ export default function StaffPOS() {
     movieService.getAll().then(setMovies).catch(() => {});
   }, []);
 
-  // Gap 1: Fetch showtimes reactively when selectedMovie changes
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+
+  // Fetch showtimes when a movie tab is selected in ShowtimeSelector
   useEffect(() => {
-    if (!selectedMovie) { setShowtimes([]); return; }
-    showtimeService.getAll(selectedMovie.id).then(setShowtimes).catch(() => {});
-  }, [selectedMovie]);
+    if (!selectedMovieId) { setShowtimes([]); return; }
+    showtimeService.getAll(selectedMovieId).then(setShowtimes).catch(() => {});
+  }, [selectedMovieId]);
 
   // Gap 2: Fetch real seats when selectedShowtime changes
   useEffect(() => {
@@ -113,6 +115,10 @@ export default function StaffPOS() {
     setSelectedMovie(movie);
     setSelectedShowtime(showtime);
     setSelectedSeatIds([]);
+  };
+
+  const handleMovieSelect = (movieId: number) => {
+    setSelectedMovieId(movieId);
   };
 
   // Toggle seat selection
@@ -320,6 +326,7 @@ export default function StaffPOS() {
               movies={movies}
               showtimes={showtimes}
               onSelectShowtime={handleSelectShowtime}
+              onMovieSelect={handleMovieSelect}
             />
           </motion.div>
         )}

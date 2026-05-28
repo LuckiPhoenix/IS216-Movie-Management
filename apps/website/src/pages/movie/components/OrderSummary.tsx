@@ -4,12 +4,18 @@ interface OrderSummaryProps {
   onComplete: () => void;
   isFormValid: boolean;
   total: number;
+  movieTitle?: string;
+  seatCount?: number;
+  hasSnacks?: boolean;
 }
 
 export default function OrderSummary({
   onComplete,
   isFormValid,
   total,
+  movieTitle,
+  seatCount,
+  hasSnacks,
 }: OrderSummaryProps) {
   return (
     <div className="bg-tickify-card border border-white/5 rounded-[2.5rem] p-8 h-fit sticky top-8 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
@@ -18,59 +24,30 @@ export default function OrderSummary({
       <div className="space-y-6 mb-8">
         <div>
           <h3 className="text-tickify-pink font-bold text-sm mb-1">
-            Deadpool & Wolverine
+            {movieTitle ?? "Your Movie"}
           </h3>
-          <p className="text-xs text-gray-500 font-medium">10:00 AM</p>
+          {seatCount != null && (
+            <p className="text-xs text-gray-500 font-medium">
+              {seatCount} ticket{seatCount !== 1 ? "s" : ""}
+            </p>
+          )}
         </div>
 
-        <div className="space-y-3">
-          <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-            Selected Seats
-          </h4>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">D10 (premium)</span>
-            <span className="font-bold text-white">₫150</span>
+        {hasSnacks && (
+          <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-white/5 pt-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-tickify-cyan shrink-0" />
+            Snacks & drinks included
           </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">D11 (premium)</span>
-            <span className="font-bold text-white">₫150</span>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-            Snacks & Drinks
-          </h4>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">Large Classic Popcorn x1</span>
-            <span className="font-bold text-white">₫85</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">Medium Caramel Popcorn x1</span>
-            <span className="font-bold text-white">₫75</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-300">Iced Coffee x4</span>
-            <span className="font-bold text-white">₫260</span>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="space-y-4 border-t border-white/5 pt-6">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500 font-bold">Subtotal</span>
-          <span className="text-white font-bold">₫720</span>
-        </div>
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500 font-bold">Service Fee</span>
-          <span className="text-white font-bold">₫25</span>
-        </div>
         <div className="flex items-center justify-between pt-4">
           <span className="text-lg font-display font-bold text-white">
             Total
           </span>
           <span className="text-2xl font-display font-bold text-tickify-pink">
-            ₫{total}
+            ₫{total.toLocaleString()}
           </span>
         </div>
       </div>
@@ -85,7 +62,7 @@ export default function OrderSummary({
               : "bg-white/5 text-gray-600 cursor-not-allowed"
           }`}
         >
-          {isFormValid ? `Pay ₫${total}` : "Complete Card Details"}
+          {isFormValid ? `Pay ₫${total.toLocaleString()}` : "Complete Card Details"}
           <ChevronRight size={18} />
         </button>
 

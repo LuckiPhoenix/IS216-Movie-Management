@@ -8,6 +8,7 @@ import Seats from "./pages/movie/Seats.tsx";
 import Snacks from "./pages/movie/Snacks.tsx";
 import Payment from "./pages/movie/Payment.tsx";
 import BookingConfirmation from "./pages/movie/BookingConfirmation.tsx";
+import VnpayReturn from "./pages/movie/VnpayReturn.tsx";
 
 import Login from "./pages/auth/Login.tsx";
 import Register from "./pages/auth/Register.tsx";
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/snacks" element={<Snacks />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<BookingConfirmation />} />
+          <Route path="/payment/vnpay-return" element={<VnpayReturn />} />
         </Route>
 
         {/* ================= STAFF ROUTES ================= */}

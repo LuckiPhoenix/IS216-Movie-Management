@@ -1,7 +1,7 @@
 import { QrCode, Smartphone, Scan, CheckCircle2, Clock } from "lucide-react";
 import { useMemo } from "react";
 
-export default function QRPayment() {
+export default function QRPayment({ total }: { total: number }) {
   const dots = useMemo(() => {
     return Array.from({ length: 400 }).map(() => Math.random() > 0.5);
   }, []);
@@ -34,12 +34,12 @@ export default function QRPayment() {
             <p className="text-[10px] font-black text-black uppercase tracking-widest">
               PromptPay QR Code
             </p>
-            <p className="text-xs font-bold text-gray-500">Amount: ₫745</p>
+            <p className="text-xs font-bold text-gray-500">Amount: ₫{total.toLocaleString()}</p>
           </div>
         </div>
 
         <div className="mt-8 w-full bg-tickify-card/50 border border-white/5 rounded-2xl p-6 text-center">
-          <h4 className="text-lg font-display font-bold mb-2">Amount: ₫745</h4>
+          <h4 className="text-lg font-display font-bold mb-2">Amount: ₫{total.toLocaleString()}</h4>
           <p className="text-xs text-gray-500 mb-6">
             Scan this QR code with any Thai mobile banking app:
           </p>

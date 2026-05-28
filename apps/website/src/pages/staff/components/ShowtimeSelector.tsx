@@ -13,21 +13,27 @@ import type { Showtime } from "../../../types/showtime";
 interface ShowtimeSelectorProps {
   movies: Movie[];
   showtimes: Showtime[];
-
   onSelectShowtime: (showtime: Showtime) => void;
+  onMovieSelect?: (movieId: number) => void;
 }
 
 const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
   movies,
   showtimes,
   onSelectShowtime,
+  onMovieSelect,
 }) => {
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+
+  const selectMovie = (id: number) => {
+    setSelectedMovieId(id);
+    onMovieSelect?.(id);
+  };
 
   // Auto select first movie
   useEffect(() => {
     if (movies.length > 0 && selectedMovieId === null) {
-      setSelectedMovieId(movies[0].id);
+      selectMovie(movies[0].id);
     }
   }, [movies, selectedMovieId]);
 
@@ -94,7 +100,7 @@ const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
               return (
                 <button
                   key={movie.id}
-                  onClick={() => setSelectedMovieId(movie.id)}
+                  onClick={() => selectMovie(movie.id)}
                   className={`group relative overflow-hidden rounded-2xl border px-5 py-3 transition-all duration-300 ${
                     isActive
                       ? "bg-tickify-cyan text-tickify-dark border-tickify-cyan shadow-[0_0_25px_rgba(0,255,242,0.25)]"
@@ -187,7 +193,7 @@ const ShowtimeSelector: React.FC<ShowtimeSelectorProps> = ({
 
                     <div className="mt-2 text-center">
                       <span className="inline-flex px-2 py-1 rounded-full bg-black/10 text-[9px] uppercase tracking-widest font-black">
-                        ${showtime.basePrice}
+                        ₫{Number(showtime.basePrice).toLocaleString()}
                       </span>
                     </div>
                   </div>

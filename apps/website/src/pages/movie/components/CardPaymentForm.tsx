@@ -10,6 +10,7 @@ export default function CardPaymentForm({
 }: CardPaymentFormProps) {
   const [formData, setFormData] = useState({
     number: "",
+    name: "",
     expiry: "",
     cvv: "",
   });
@@ -17,6 +18,7 @@ export default function CardPaymentForm({
   useEffect(() => {
     const isValid =
       formData.number.replace(/\s/g, "").length === 16 &&
+      formData.name.trim().length > 0 &&
       formData.expiry.length === 5 &&
       formData.cvv.length === 3;
 
@@ -61,6 +63,8 @@ export default function CardPaymentForm({
             type="text"
             placeholder="John Doe"
             className="w-full bg-tickify-card border border-white/5 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-tickify-pink/50 transition-colors"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
         </div>
 
@@ -73,6 +77,8 @@ export default function CardPaymentForm({
               type="text"
               placeholder="MM/YY"
               className="w-full bg-tickify-card border border-white/5 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-tickify-pink/50 transition-colors"
+              value={formData.expiry}
+              onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
             />
           </div>
           <div className="space-y-2">
@@ -83,6 +89,8 @@ export default function CardPaymentForm({
               type="text"
               placeholder="123"
               className="w-full bg-tickify-card border border-white/5 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-tickify-pink/50 transition-colors"
+              value={formData.cvv}
+              onChange={(e) => setFormData({ ...formData, cvv: e.target.value })}
             />
           </div>
         </div>

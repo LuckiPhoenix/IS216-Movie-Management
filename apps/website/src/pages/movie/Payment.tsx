@@ -19,7 +19,6 @@ const STEPS = [
   { id: 6, label: "Confirmation" },
 ];
 
-// Map UI method selection to backend PaymentMethod enum
 const UI_METHOD_MAP: Record<"card" | "qr", PaymentMethod> = {
   card: "CASH",
   qr: "VNPAY",
@@ -27,7 +26,7 @@ const UI_METHOD_MAP: Record<"card" | "qr", PaymentMethod> = {
 
 export default function Payment() {
   const navigate = useNavigate();
-  const { bookingId, totalPrice, orderId, setPaymentId } = useBooking();
+  const { bookingId, totalPrice, orderId, setPaymentId, movieTitle, selectedSeatIds } = useBooking();
 
   useEffect(() => {
     if (!bookingId) navigate("/seats");
@@ -56,6 +55,16 @@ export default function Payment() {
         method: UI_METHOD_MAP[paymentMethod],
       });
       setPaymentId(payment.id);
+
+      if (payment.method === "VNPAY" && payment.vnpayInit?.paymentUrl) {
+        // Persist booking state so VnpayReturn page can restore it
+        sessionStorage.setItem("vnpay_bookingId", String(bookingId));
+        sessionStorage.setItem("vnpay_orderId", orderId != null ? String(orderId) : "");
+        sessionStorage.setItem("vnpay_paymentId", String(payment.id));
+        window.location.href = payment.vnpayInit.paymentUrl;
+        return;
+      }
+
       navigate("/confirmation");
     } catch (err) {
       setError(typeof err === "string" ? err : "Payment failed");
@@ -75,7 +84,7 @@ export default function Payment() {
               Complete Payment
             </h1>
             <p className="text-gray-500 font-medium">
-              Secure payment with multiple options including PromptPay
+              Secure payment with multiple options including VNPAY
             </p>
           </div>
 
@@ -97,7 +106,6 @@ export default function Payment() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Payment Options */}
           <div className="lg:col-span-2 space-y-12">
             <div className="bg-tickify-card/30 border border-white/5 rounded-[3rem] p-8 md:p-12">
               <PaymentMethodSelector
@@ -112,7 +120,7 @@ export default function Payment() {
                   onValidationChange={(isValid) => setIsCardValid(isValid)}
                 />
               ) : (
-                <QRPayment />
+                <QRPayment total={totalPrice ?? 0} />
               )}
             </div>
           </div>
@@ -122,11 +130,14 @@ export default function Payment() {
               total={totalPrice ?? 0}
               isFormValid={isFormValid && !loading}
               onComplete={handlePay}
+              movieTitle={movieTitle ?? undefined}
+              seatCount={selectedSeatIds.length || undefined}
+              hasSnacks={orderId != null}
             />
             {loading && (
               <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
                 <div className="w-4 h-4 border-2 border-tickify-pink border-t-transparent rounded-full animate-spin" />
-                Processing payment…
+                {paymentMethod === "qr" ? "Redirecting to VNPAY…" : "Processing payment…"}
               </div>
             )}
           </div>

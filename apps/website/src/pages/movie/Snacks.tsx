@@ -32,7 +32,7 @@ function toSnackShape(food: FoodItem) {
 
 export default function Snacks() {
   const navigate = useNavigate();
-  const { bookingId, setOrderId } = useBooking();
+  const { bookingId, setOrderId, movieTitle } = useBooking();
 
   const [foods, setFoods] = useState<FoodItem[]>([]);
   const [selectedSnacks, setSelectedSnacks] = useState<Record<string, number>>({});
@@ -188,6 +188,7 @@ export default function Snacks() {
                 selectedSnacks={selectedSnacks}
                 snacks={snackShapes}
                 ticketPrice={0}
+                movieTitle={movieTitle ?? undefined}
                 onContinue={submitting ? () => {} : handleContinue}
                 onSkip={() => navigate("/payment")}
               />

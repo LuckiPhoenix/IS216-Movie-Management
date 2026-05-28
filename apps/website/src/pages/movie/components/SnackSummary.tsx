@@ -11,6 +11,7 @@ interface SnackSummaryProps {
   selectedSnacks: Record<string, number>;
   snacks: Snack[];
   ticketPrice: number;
+  movieTitle?: string;
   onContinue: () => void;
   onSkip: () => void;
 }
@@ -19,6 +20,7 @@ export default function SnackSummary({
   selectedSnacks,
   snacks,
   ticketPrice,
+  movieTitle,
   onContinue,
   onSkip,
 }: SnackSummaryProps) {
@@ -39,7 +41,7 @@ export default function SnackSummary({
       <div className="space-y-6 mb-8">
         <div>
           <h3 className="text-white font-bold text-sm mb-1">
-            Deadpool & Wolverine
+            {movieTitle ?? "Your Movie"}
           </h3>
           <p className="text-xs text-gray-500 font-medium">
             10:00 AM • 2 tickets
