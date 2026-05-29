@@ -144,13 +144,13 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         // Food items
-        saveFoodItem("Large Popcorn", "Freshly popped buttered popcorn", "80000", "POPCORN");
-        saveFoodItem("Nachos", "Crispy nachos with cheese dip", "65000", "POPCORN");
-        saveFoodItem("Coke", "Ice cold Coca-Cola 500ml", "45000", "DRINK");
-        saveFoodItem("Sprite", "Refreshing Sprite 500ml", "45000", "DRINK");
-        saveFoodItem("Combo 1 (Popcorn + Coke)", "Large popcorn and Coke combo", "110000", "COMBO");
-        saveFoodItem("Couple Set", "2 popcorns, 2 drinks", "180000", "COUPLE_SET");
-        saveFoodItem("M&Ms", "Chocolate candy", "35000", "CANDY");
+        saveFoodItem("Large Popcorn", "Freshly popped buttered popcorn", "80000", "POPCORN", "https://png.pngtree.com/png-clipart/20250103/original/pngtree-watch-movie-popcorn-maker-snack-foods-png-image_18726224.png");
+        saveFoodItem("Nachos", "Crispy nachos with cheese dip", "65000", "POPCORN", "https://png.pngtree.com/png-clipart/20231020/original/pngtree-mexican-food-nachos-png-image_13378418.png");
+        saveFoodItem("Coke", "Ice cold Coca-Cola 500ml", "45000", "DRINK", "https://static.vecteezy.com/system/resources/thumbnails/047/429/595/small/refreshing-glass-of-cola-with-ice-cubes-splashing-out-perfect-for-representing-a-cool-beverage-or-drink-advertisement-png.png");
+        saveFoodItem("Sprite", "Refreshing Sprite 500ml", "45000", "DRINK", "https://static.vecteezy.com/system/resources/thumbnails/047/429/595/small/refreshing-glass-of-cola-with-ice-cubes-splashing-out-perfect-for-representing-a-cool-beverage-or-drink-advertisement-png.png");
+        saveFoodItem("Combo 1 (Popcorn + Coke)", "Large popcorn and Coke combo", "110000", "COMBO", "https://png.pngtree.com/png-vector/20260330/ourmid/pngtree-cinema-movie-night-snacks-3d-glasses-popcorn-colorful-soda-drink-fun-png-image_18975892.webp");
+        saveFoodItem("Couple Set", "2 popcorns, 2 drinks", "180000", "COUPLE_SET", "https://png.pngtree.com/png-vector/20250506/ourmid/pngtree-popcorn-and-3d-glasses-for-cinema-essentials-indicating-a-soothing-movie-png-image_16172008.png");
+        saveFoodItem("M&Ms", "Chocolate candy", "35000", "CANDY", "https://www.pngall.com/wp-content/uploads/15/MM-Background-PNG.png");
     }
 
     private SeatTier saveTier(String name, String multiplier, String description) {
@@ -212,12 +212,13 @@ public class DataSeeder implements ApplicationRunner {
         return movieRepository.save(movie);
     }
 
-    private void saveFoodItem(String name, String description, String price, String category) {
+    private void saveFoodItem(String name, String description, String price, String category, String imageUrl) {
         FoodItem item = new FoodItem();
         item.setName(name);
         item.setDescription(description);
         item.setPrice(new BigDecimal(price));
         item.setCategory(category);
+        item.setImageUrl(imageUrl);
         item.setIsAvailable(true);
         foodItemRepository.save(item);
     }
